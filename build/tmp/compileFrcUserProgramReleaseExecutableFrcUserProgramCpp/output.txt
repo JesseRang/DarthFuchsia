@@ -1,0 +1,34 @@
+See file:///C:/Users/FRC%20Programmers/Desktop/FRC%20Programs/SwerveMainTestWithGyro/build/tmp/compileFrcUserProgramReleaseExecutableFrcUserProgramCpp/output.txt for all output for compileFrcUserProgramReleaseExecutableFrcUserProgramCpp.
+compiling SwerveModule.cpp successful.
+In file included from C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANSparkMax.h:37:0,
+                 from C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\include/SwerveModule.h:17,
+                 from C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\SwerveModule.cpp:8:
+C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: warning: attribute ignored in declaration of 'enum class rev::CANDigitalInput::LimitSwitch' [-Wattributes]
+     enum class LimitSwitch { kForward, kReverse };
+                ^~~~~~~~~~~
+C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: note: attribute for 'enum class rev::CANDigitalInput::LimitSwitch' must follow the 'enum class' keyword
+C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\SwerveModule.cpp: In constructor 'SwerveModule::SwerveModule(int, int)':
+C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\SwerveModule.cpp:33:12: warning: unused variable 'relativeEncoder' [-Wunused-variable]
+     double relativeEncoder = 0;
+            ^~~~~~~~~~~~~~~
+
+compiling Robot.cpp successful.
+In file included from C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANSparkMax.h:37:0,
+                 from C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\include/SwerveModule.h:17,
+                 from C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Robot.cpp:11:
+C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: warning: attribute ignored in declaration of 'enum class rev::CANDigitalInput::LimitSwitch' [-Wattributes]
+     enum class LimitSwitch { kForward, kReverse };
+                ^~~~~~~~~~~
+C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: note: attribute for 'enum class rev::CANDigitalInput::LimitSwitch' must follow the 'enum class' keyword
+
+compiling Drivetrain.cpp successful.
+In file included from C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANSparkMax.h:37:0,
+                 from C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\include/SwerveModule.h:17,
+                 from C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\include/Drivetrain.h:18,
+                 from C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Drivetrain.cpp:1:
+C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: warning: attribute ignored in declaration of 'enum class rev::CANDigitalInput::LimitSwitch' [-Wattributes]
+     enum class LimitSwitch { kForward, kReverse };
+                ^~~~~~~~~~~
+C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: note: attribute for 'enum class rev::CANDigitalInput::LimitSwitch' must follow the 'enum class' keyword
+
+Finished compileFrcUserProgramReleaseExecutableFrcUserProgramCpp, see full log file:///C:/Users/FRC%20Programmers/Desktop/FRC%20Programs/SwerveMainTestWithGyro/build/tmp/compileFrcUserProgramReleaseExecutableFrcUserProgramCpp/output.txt.

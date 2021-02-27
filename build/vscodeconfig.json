@@ -1,0 +1,485 @@
+[
+  {
+    "name": "linuxathena",
+    "architecture": "arm-v7",
+    "operatingSystem": "linux",
+    "flavor": "default",
+    "buildType": "debug",
+    "cppPath": "C:\\Users\\Public\\wpilib\\2021\\roborio\\bin\\arm-frc2021-linux-gnueabi-g++.exe",
+    "cPath": "C:\\Users\\Public\\wpilib\\2021\\roborio\\bin\\arm-frc2021-linux-gnueabi-gcc.exe",
+    "msvc": false,
+    "gcc": true,
+    "systemCppMacros": [],
+    "systemCppArgs": [],
+    "systemCMacros": [],
+    "systemCArgs": [],
+    "allLibFiles": [
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\13520542a98acea3730e534df51d9c46\\navx-cpp-4.0.412-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\88da88240b522bbb7ca6331690f02889\\wpiapi-cpp-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\2e8c2b7179e187160ff76b79fc0d9223\\api-cpp-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\70282b0872c889caa0db786939d4df74\\cci-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\20b49635867850908a0248e5a68c8dd9\\cci-sim-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b0d158725a562a8c32218976696e3f81\\diagnostics-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7596617ade1f24998580e278a3e37c6b\\canutils-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a2ed936538710bc266f687eba8d4aeda\\platform-sim-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\533a1713f59664ac8a47105d7efa9251\\core-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ee93d72486d49800c9242d5f6399aa3f\\simTalonSRX-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b079e451894c1d4717801082f2ba511b\\simVictorSPX-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\246d2968206faa917dfa3b06fbd3505b\\SparkMax-cpp-1.5.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\edbaa87cf7ff652cb4350631f61654cb\\SparkMax-driver-1.5.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a65aacb98ec5983c495c4ad8038105a8\\wpilibNewCommands-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\6be96df96a38b963f18b6d6c7e7f144c\\wpilibOldCommands-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c8a90f4e34412eb91233d26a46d5e20f\\wpilibc-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9955072513694bca83f00a50b454c5ae\\ntcore-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\32c7934b5d7dd4fcbc8aee3e85692e1a\\hal-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\33aad2bf9ba43566b7e2e43ad25ac9b8\\wpiutil-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\48cb864223843444b53785ee4ca77c33\\wpimath-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\4b6192c384cf8473a9d086e6adb4b937\\chipobject-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cd1da3a238ebc04371ef638a62a8c4a8\\netcomm-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cca00724dbd9d228d2bdefb7d7faaa8d\\visa-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\24bf551864a8289c82c07473de3272f8\\cameraserver-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f7a08876b3546a7a07521c05a2586095\\cscore-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\67a79c1c661a84cbc99042d108434bbc\\opencv-cpp-3.4.7-5-headers\\",
+      "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9732d413d3ac5bf2159f44e028c43790\\navx-cpp-4.0.412-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f623fe1a1460d4176abcb365502384d7\\wpilibNewCommands-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\3215e70e6645cbae82959ab463a4840f\\wpilibOldCommands-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\25ac5ae3f1e2d586410ff192ed1e8476\\wpilibc-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f9699234970e75dc5e9c2129fed41724\\ntcore-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ae5e7536bcbbd41ce0708d126c9ab300\\hal-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\193747ffedef5486e89e050fd6af6ec8\\wpiutil-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7966b45344894bab019f50cf04e6d0ac\\wpimath-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\884040f1fd22f1bc47c6e8f32f90ab43\\cameraserver-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9ba1d9cf4cda97d3bd3f06e936abcc96\\cscore-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c16b0dc01f031b98b7869bbe788c74e4\\opencv-cpp-3.4.7-5-sources\\"
+    ],
+    "allLibSources": [
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9732d413d3ac5bf2159f44e028c43790\\navx-cpp-4.0.412-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f623fe1a1460d4176abcb365502384d7\\wpilibNewCommands-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\3215e70e6645cbae82959ab463a4840f\\wpilibOldCommands-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\25ac5ae3f1e2d586410ff192ed1e8476\\wpilibc-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f9699234970e75dc5e9c2129fed41724\\ntcore-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ae5e7536bcbbd41ce0708d126c9ab300\\hal-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\193747ffedef5486e89e050fd6af6ec8\\wpiutil-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7966b45344894bab019f50cf04e6d0ac\\wpimath-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\884040f1fd22f1bc47c6e8f32f90ab43\\cameraserver-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9ba1d9cf4cda97d3bd3f06e936abcc96\\cscore-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c16b0dc01f031b98b7869bbe788c74e4\\opencv-cpp-3.4.7-5-sources\\"
+    ],
+    "allLibHeaders": [
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\13520542a98acea3730e534df51d9c46\\navx-cpp-4.0.412-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\88da88240b522bbb7ca6331690f02889\\wpiapi-cpp-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\2e8c2b7179e187160ff76b79fc0d9223\\api-cpp-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\70282b0872c889caa0db786939d4df74\\cci-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\20b49635867850908a0248e5a68c8dd9\\cci-sim-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b0d158725a562a8c32218976696e3f81\\diagnostics-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7596617ade1f24998580e278a3e37c6b\\canutils-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a2ed936538710bc266f687eba8d4aeda\\platform-sim-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\533a1713f59664ac8a47105d7efa9251\\core-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ee93d72486d49800c9242d5f6399aa3f\\simTalonSRX-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b079e451894c1d4717801082f2ba511b\\simVictorSPX-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\246d2968206faa917dfa3b06fbd3505b\\SparkMax-cpp-1.5.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\edbaa87cf7ff652cb4350631f61654cb\\SparkMax-driver-1.5.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a65aacb98ec5983c495c4ad8038105a8\\wpilibNewCommands-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\6be96df96a38b963f18b6d6c7e7f144c\\wpilibOldCommands-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c8a90f4e34412eb91233d26a46d5e20f\\wpilibc-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9955072513694bca83f00a50b454c5ae\\ntcore-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\32c7934b5d7dd4fcbc8aee3e85692e1a\\hal-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\33aad2bf9ba43566b7e2e43ad25ac9b8\\wpiutil-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\48cb864223843444b53785ee4ca77c33\\wpimath-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\4b6192c384cf8473a9d086e6adb4b937\\chipobject-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cd1da3a238ebc04371ef638a62a8c4a8\\netcomm-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cca00724dbd9d228d2bdefb7d7faaa8d\\visa-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\24bf551864a8289c82c07473de3272f8\\cameraserver-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f7a08876b3546a7a07521c05a2586095\\cscore-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\67a79c1c661a84cbc99042d108434bbc\\opencv-cpp-3.4.7-5-headers\\",
+      "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\"
+    ],
+    "binaries": [
+      {
+        "componentName": "frcUserProgram",
+        "sourceSets": [
+          {
+            "source": {
+              "srcDirs": [
+                "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\cpp\\"
+              ],
+              "includes": [
+                "**/*.cpp",
+                "**/*.cc"
+              ],
+              "excludes": []
+            },
+            "exportedHeaders": {
+              "srcDirs": [
+                "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\"
+              ],
+              "includes": [
+                "**/*.cpp",
+                "**/*.cc"
+              ],
+              "excludes": []
+            },
+            "cpp": true,
+            "args": [
+              "-Wall",
+              "-Wextra",
+              "-std=c++17",
+              "-Wformat=2",
+              "-pedantic",
+              "-Wno-psabi",
+              "-Wno-unused-parameter",
+              "-Wno-error=deprecated-declarations",
+              "-fPIC",
+              "-rdynamic",
+              "-pthread",
+              "-Og",
+              "-g"
+            ],
+            "macros": []
+          }
+        ],
+        "libHeaders": [
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\13520542a98acea3730e534df51d9c46\\navx-cpp-4.0.412-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\88da88240b522bbb7ca6331690f02889\\wpiapi-cpp-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\2e8c2b7179e187160ff76b79fc0d9223\\api-cpp-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\70282b0872c889caa0db786939d4df74\\cci-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\20b49635867850908a0248e5a68c8dd9\\cci-sim-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b0d158725a562a8c32218976696e3f81\\diagnostics-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7596617ade1f24998580e278a3e37c6b\\canutils-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a2ed936538710bc266f687eba8d4aeda\\platform-sim-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\533a1713f59664ac8a47105d7efa9251\\core-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ee93d72486d49800c9242d5f6399aa3f\\simTalonSRX-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b079e451894c1d4717801082f2ba511b\\simVictorSPX-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\246d2968206faa917dfa3b06fbd3505b\\SparkMax-cpp-1.5.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\edbaa87cf7ff652cb4350631f61654cb\\SparkMax-driver-1.5.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a65aacb98ec5983c495c4ad8038105a8\\wpilibNewCommands-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\6be96df96a38b963f18b6d6c7e7f144c\\wpilibOldCommands-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c8a90f4e34412eb91233d26a46d5e20f\\wpilibc-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9955072513694bca83f00a50b454c5ae\\ntcore-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\32c7934b5d7dd4fcbc8aee3e85692e1a\\hal-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\33aad2bf9ba43566b7e2e43ad25ac9b8\\wpiutil-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\48cb864223843444b53785ee4ca77c33\\wpimath-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\4b6192c384cf8473a9d086e6adb4b937\\chipobject-2020.10.1-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cd1da3a238ebc04371ef638a62a8c4a8\\netcomm-2020.10.1-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cca00724dbd9d228d2bdefb7d7faaa8d\\visa-2020.10.1-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\24bf551864a8289c82c07473de3272f8\\cameraserver-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f7a08876b3546a7a07521c05a2586095\\cscore-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\67a79c1c661a84cbc99042d108434bbc\\opencv-cpp-3.4.7-5-headers\\",
+          "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\"
+        ],
+        "sharedLibrary": false,
+        "executable": true
+      }
+    ],
+    "sourceBinaries": [
+      {
+        "source": {
+          "srcDirs": [
+            "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\cpp\\"
+          ],
+          "includes": [
+            "**/*.cpp",
+            "**/*.cc"
+          ],
+          "excludes": []
+        },
+        "componentName": "frcUserProgram",
+        "cpp": true,
+        "args": [
+          "-Wall",
+          "-Wextra",
+          "-std=c++17",
+          "-Wformat=2",
+          "-pedantic",
+          "-Wno-psabi",
+          "-Wno-unused-parameter",
+          "-Wno-error=deprecated-declarations",
+          "-fPIC",
+          "-rdynamic",
+          "-pthread",
+          "-Og",
+          "-g"
+        ],
+        "macros": [],
+        "sharedLibrary": false,
+        "executable": true
+      },
+      {
+        "source": {
+          "srcDirs": [
+            "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\"
+          ],
+          "includes": [
+            "**/*.cpp",
+            "**/*.cc"
+          ],
+          "excludes": []
+        },
+        "componentName": "frcUserProgram",
+        "cpp": true,
+        "args": [
+          "-Wall",
+          "-Wextra",
+          "-std=c++17",
+          "-Wformat=2",
+          "-pedantic",
+          "-Wno-psabi",
+          "-Wno-unused-parameter",
+          "-Wno-error=deprecated-declarations",
+          "-fPIC",
+          "-rdynamic",
+          "-pthread",
+          "-Og",
+          "-g"
+        ],
+        "macros": [],
+        "sharedLibrary": false,
+        "executable": true
+      }
+    ],
+    "nameBinaryMap": {
+      "frcUserProgram": 0
+    }
+  },
+  {
+    "name": "linuxathena",
+    "architecture": "arm-v7",
+    "operatingSystem": "linux",
+    "flavor": "default",
+    "buildType": "release",
+    "cppPath": "C:\\Users\\Public\\wpilib\\2021\\roborio\\bin\\arm-frc2021-linux-gnueabi-g++.exe",
+    "cPath": "C:\\Users\\Public\\wpilib\\2021\\roborio\\bin\\arm-frc2021-linux-gnueabi-gcc.exe",
+    "msvc": false,
+    "gcc": true,
+    "systemCppMacros": [],
+    "systemCppArgs": [],
+    "systemCMacros": [],
+    "systemCArgs": [],
+    "allLibFiles": [
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\13520542a98acea3730e534df51d9c46\\navx-cpp-4.0.412-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\88da88240b522bbb7ca6331690f02889\\wpiapi-cpp-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\2e8c2b7179e187160ff76b79fc0d9223\\api-cpp-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\70282b0872c889caa0db786939d4df74\\cci-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\20b49635867850908a0248e5a68c8dd9\\cci-sim-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b0d158725a562a8c32218976696e3f81\\diagnostics-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7596617ade1f24998580e278a3e37c6b\\canutils-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a2ed936538710bc266f687eba8d4aeda\\platform-sim-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\533a1713f59664ac8a47105d7efa9251\\core-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ee93d72486d49800c9242d5f6399aa3f\\simTalonSRX-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b079e451894c1d4717801082f2ba511b\\simVictorSPX-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\246d2968206faa917dfa3b06fbd3505b\\SparkMax-cpp-1.5.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\edbaa87cf7ff652cb4350631f61654cb\\SparkMax-driver-1.5.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a65aacb98ec5983c495c4ad8038105a8\\wpilibNewCommands-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\6be96df96a38b963f18b6d6c7e7f144c\\wpilibOldCommands-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c8a90f4e34412eb91233d26a46d5e20f\\wpilibc-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9955072513694bca83f00a50b454c5ae\\ntcore-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\32c7934b5d7dd4fcbc8aee3e85692e1a\\hal-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\33aad2bf9ba43566b7e2e43ad25ac9b8\\wpiutil-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\48cb864223843444b53785ee4ca77c33\\wpimath-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\4b6192c384cf8473a9d086e6adb4b937\\chipobject-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cd1da3a238ebc04371ef638a62a8c4a8\\netcomm-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cca00724dbd9d228d2bdefb7d7faaa8d\\visa-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\24bf551864a8289c82c07473de3272f8\\cameraserver-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f7a08876b3546a7a07521c05a2586095\\cscore-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\67a79c1c661a84cbc99042d108434bbc\\opencv-cpp-3.4.7-5-headers\\",
+      "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9732d413d3ac5bf2159f44e028c43790\\navx-cpp-4.0.412-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f623fe1a1460d4176abcb365502384d7\\wpilibNewCommands-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\3215e70e6645cbae82959ab463a4840f\\wpilibOldCommands-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\25ac5ae3f1e2d586410ff192ed1e8476\\wpilibc-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f9699234970e75dc5e9c2129fed41724\\ntcore-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ae5e7536bcbbd41ce0708d126c9ab300\\hal-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\193747ffedef5486e89e050fd6af6ec8\\wpiutil-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7966b45344894bab019f50cf04e6d0ac\\wpimath-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\884040f1fd22f1bc47c6e8f32f90ab43\\cameraserver-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9ba1d9cf4cda97d3bd3f06e936abcc96\\cscore-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c16b0dc01f031b98b7869bbe788c74e4\\opencv-cpp-3.4.7-5-sources\\"
+    ],
+    "allLibSources": [
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9732d413d3ac5bf2159f44e028c43790\\navx-cpp-4.0.412-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f623fe1a1460d4176abcb365502384d7\\wpilibNewCommands-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\3215e70e6645cbae82959ab463a4840f\\wpilibOldCommands-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\25ac5ae3f1e2d586410ff192ed1e8476\\wpilibc-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f9699234970e75dc5e9c2129fed41724\\ntcore-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ae5e7536bcbbd41ce0708d126c9ab300\\hal-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\193747ffedef5486e89e050fd6af6ec8\\wpiutil-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7966b45344894bab019f50cf04e6d0ac\\wpimath-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\884040f1fd22f1bc47c6e8f32f90ab43\\cameraserver-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9ba1d9cf4cda97d3bd3f06e936abcc96\\cscore-cpp-2021.1.2-sources\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c16b0dc01f031b98b7869bbe788c74e4\\opencv-cpp-3.4.7-5-sources\\"
+    ],
+    "allLibHeaders": [
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\13520542a98acea3730e534df51d9c46\\navx-cpp-4.0.412-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\88da88240b522bbb7ca6331690f02889\\wpiapi-cpp-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\2e8c2b7179e187160ff76b79fc0d9223\\api-cpp-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\70282b0872c889caa0db786939d4df74\\cci-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\20b49635867850908a0248e5a68c8dd9\\cci-sim-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b0d158725a562a8c32218976696e3f81\\diagnostics-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7596617ade1f24998580e278a3e37c6b\\canutils-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a2ed936538710bc266f687eba8d4aeda\\platform-sim-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\533a1713f59664ac8a47105d7efa9251\\core-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ee93d72486d49800c9242d5f6399aa3f\\simTalonSRX-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b079e451894c1d4717801082f2ba511b\\simVictorSPX-5.19.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\246d2968206faa917dfa3b06fbd3505b\\SparkMax-cpp-1.5.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\edbaa87cf7ff652cb4350631f61654cb\\SparkMax-driver-1.5.4-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a65aacb98ec5983c495c4ad8038105a8\\wpilibNewCommands-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\6be96df96a38b963f18b6d6c7e7f144c\\wpilibOldCommands-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c8a90f4e34412eb91233d26a46d5e20f\\wpilibc-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9955072513694bca83f00a50b454c5ae\\ntcore-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\32c7934b5d7dd4fcbc8aee3e85692e1a\\hal-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\33aad2bf9ba43566b7e2e43ad25ac9b8\\wpiutil-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\48cb864223843444b53785ee4ca77c33\\wpimath-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\4b6192c384cf8473a9d086e6adb4b937\\chipobject-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cd1da3a238ebc04371ef638a62a8c4a8\\netcomm-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cca00724dbd9d228d2bdefb7d7faaa8d\\visa-2020.10.1-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\24bf551864a8289c82c07473de3272f8\\cameraserver-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f7a08876b3546a7a07521c05a2586095\\cscore-cpp-2021.1.2-headers\\",
+      "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\67a79c1c661a84cbc99042d108434bbc\\opencv-cpp-3.4.7-5-headers\\",
+      "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\"
+    ],
+    "binaries": [
+      {
+        "componentName": "frcUserProgram",
+        "sourceSets": [
+          {
+            "source": {
+              "srcDirs": [
+                "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\cpp\\"
+              ],
+              "includes": [
+                "**/*.cpp",
+                "**/*.cc"
+              ],
+              "excludes": []
+            },
+            "exportedHeaders": {
+              "srcDirs": [
+                "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\"
+              ],
+              "includes": [
+                "**/*.cpp",
+                "**/*.cc"
+              ],
+              "excludes": []
+            },
+            "cpp": true,
+            "args": [
+              "-Wall",
+              "-Wextra",
+              "-std=c++17",
+              "-Wformat=2",
+              "-pedantic",
+              "-Wno-psabi",
+              "-Wno-unused-parameter",
+              "-Wno-error=deprecated-declarations",
+              "-fPIC",
+              "-rdynamic",
+              "-pthread",
+              "-O2"
+            ],
+            "macros": []
+          }
+        ],
+        "libHeaders": [
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\13520542a98acea3730e534df51d9c46\\navx-cpp-4.0.412-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\88da88240b522bbb7ca6331690f02889\\wpiapi-cpp-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\2e8c2b7179e187160ff76b79fc0d9223\\api-cpp-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\70282b0872c889caa0db786939d4df74\\cci-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\20b49635867850908a0248e5a68c8dd9\\cci-sim-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b0d158725a562a8c32218976696e3f81\\diagnostics-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\7596617ade1f24998580e278a3e37c6b\\canutils-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a2ed936538710bc266f687eba8d4aeda\\platform-sim-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\533a1713f59664ac8a47105d7efa9251\\core-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ee93d72486d49800c9242d5f6399aa3f\\simTalonSRX-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\b079e451894c1d4717801082f2ba511b\\simVictorSPX-5.19.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\246d2968206faa917dfa3b06fbd3505b\\SparkMax-cpp-1.5.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\edbaa87cf7ff652cb4350631f61654cb\\SparkMax-driver-1.5.4-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\a65aacb98ec5983c495c4ad8038105a8\\wpilibNewCommands-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\6be96df96a38b963f18b6d6c7e7f144c\\wpilibOldCommands-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\c8a90f4e34412eb91233d26a46d5e20f\\wpilibc-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\9955072513694bca83f00a50b454c5ae\\ntcore-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\32c7934b5d7dd4fcbc8aee3e85692e1a\\hal-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\33aad2bf9ba43566b7e2e43ad25ac9b8\\wpiutil-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\48cb864223843444b53785ee4ca77c33\\wpimath-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\4b6192c384cf8473a9d086e6adb4b937\\chipobject-2020.10.1-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cd1da3a238ebc04371ef638a62a8c4a8\\netcomm-2020.10.1-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\cca00724dbd9d228d2bdefb7d7faaa8d\\visa-2020.10.1-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\24bf551864a8289c82c07473de3272f8\\cameraserver-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\f7a08876b3546a7a07521c05a2586095\\cscore-cpp-2021.1.2-headers\\",
+          "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\67a79c1c661a84cbc99042d108434bbc\\opencv-cpp-3.4.7-5-headers\\",
+          "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\"
+        ],
+        "sharedLibrary": false,
+        "executable": true
+      }
+    ],
+    "sourceBinaries": [
+      {
+        "source": {
+          "srcDirs": [
+            "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\cpp\\"
+          ],
+          "includes": [
+            "**/*.cpp",
+            "**/*.cc"
+          ],
+          "excludes": []
+        },
+        "componentName": "frcUserProgram",
+        "cpp": true,
+        "args": [
+          "-Wall",
+          "-Wextra",
+          "-std=c++17",
+          "-Wformat=2",
+          "-pedantic",
+          "-Wno-psabi",
+          "-Wno-unused-parameter",
+          "-Wno-error=deprecated-declarations",
+          "-fPIC",
+          "-rdynamic",
+          "-pthread",
+          "-O2"
+        ],
+        "macros": [],
+        "sharedLibrary": false,
+        "executable": true
+      },
+      {
+        "source": {
+          "srcDirs": [
+            "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\src\\main\\include\\"
+          ],
+          "includes": [
+            "**/*.cpp",
+            "**/*.cc"
+          ],
+          "excludes": []
+        },
+        "componentName": "frcUserProgram",
+        "cpp": true,
+        "args": [
+          "-Wall",
+          "-Wextra",
+          "-std=c++17",
+          "-Wformat=2",
+          "-pedantic",
+          "-Wno-psabi",
+          "-Wno-unused-parameter",
+          "-Wno-error=deprecated-declarations",
+          "-fPIC",
+          "-rdynamic",
+          "-pthread",
+          "-O2"
+        ],
+        "macros": [],
+        "sharedLibrary": false,
+        "executable": true
+      }
+    ],
+    "nameBinaryMap": {
+      "frcUserProgram": 0
+    }
+  }
+]
