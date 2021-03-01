@@ -12,18 +12,16 @@
 #include <frc/Talon.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
 #include <ctre/Phoenix.h>
+#include "Autons.h"
 
 #include <frc/Drive/RobotDriveBase.h>
 
-//#include <frc/XboxController.h>
 #include <frc/Joystick.h>
 
 #include "Drivetrain.h"
 
 WPI_TalonFX IntakeMotor{0};
 
-frc::Timer timer;
-frc::Timer arrivedTimer;
 frc::AnalogInput brAnalog{3};
 frc::AnalogInput blAnalog{2};
 frc::AnalogInput frAnalog{0};
@@ -33,88 +31,46 @@ class Robot : public frc::TimedRobot
 {
 
 public:
-  int phase;
-
   void AutonomousInit() override
   {
-    m_swerve.m_frontLeft.zeroDriveEncoder();
-    m_swerve.m_frontRight.zeroDriveEncoder();
-    m_swerve.m_backLeft.zeroDriveEncoder();
-    m_swerve.m_backRight.zeroDriveEncoder();
-
-    //resetTurnEncoder();
-
-    m_swerve.ahrs->ZeroYaw();
-
-    phase = 1;
-    timer.Reset();
-    timer.Start();
-
-    arrivedTimer.Reset();
-    arrivedTimer.Start();
-    
-
-    m_swerve.arrived = false;
-
-    frc::Wait(0.05);
+    Autonomous.Initialize();
   }
-
-  double pauseTime = 0.5;
 
   void AutonomousPeriodic() override
   {
-    if (m_swerve.arrived == true)
-    {
-      if (arrivedTimer.Get() > pauseTime) {
-        m_swerve.m_frontLeft.zeroDriveEncoder();
-        m_swerve.m_frontRight.zeroDriveEncoder();
-        m_swerve.m_backLeft.zeroDriveEncoder();
-        m_swerve.m_backRight.zeroDriveEncoder();
+    Autonomous.pauseLogic();
 
-        frc::Wait(0.02);
+    std::cout << "arrived " << m_swerve.arrived << "  phase " << Autonomous.phase 
+              << "  drive encoder " << m_swerve.m_frontLeft.m_driveEncoder.GetPosition() << std::endl;
 
-        phase++;
-        std::cout << "phase increased" << std::endl;
-        m_swerve.arrived = false;
-      }
-    }
-    else
-    {
-     arrivedTimer.Reset();
-    }
-
-    std::cout << "arrived " << m_swerve.arrived << "  phase " << phase << "  drive encoder " << m_swerve.m_frontLeft.m_driveEncoder.GetPosition() << std::endl;
-
-    barrelRaceAuto();
-    //m_swerve.UpdateOdometry();
+    Autonomous.barrelRaceAuto();
+    //Autonomous.autonDrive.UpdateOdometry();
   }
 
   void TeleopInit() override
   {
-    m_swerve.ahrs->ZeroYaw();
+    m_swerve.swerveGyro->ZeroYaw();
     /*Setting the encoders to mathc the position of the Gyro*/
-    resetTurnEncoder();
-
+    m_swerve.resetTurnEncoder();
   }
 
   int first_loop = 0;
   void TeleopPeriodic() override
   {
-    if(first_loop == 0){
-      resetTurnEncoder();
+    if (first_loop == 0)
+    {
+      m_swerve.resetTurnEncoder();
       first_loop = 1;
       frc::Wait(0.02);
-      }
+    }
     //make a button to reset encoder values
     DriveWithJoystick(true); //true = field relative, false = not field relative
-    frc::SmartDashboard::PutNumber("fr encoder", frAnalog.GetVoltage());
-    frc::SmartDashboard::PutNumber("fl encoder", flAnalog.GetVoltage());
-    frc::SmartDashboard::PutNumber("bl encoder", blAnalog.GetVoltage());
-    frc::SmartDashboard::PutNumber("br encoder", brAnalog.GetVoltage());
+    m_swerve.displayAnalogEncoders();
   }
 
 private:
   frc::Joystick m_controller{0};
+  Autons Autonomous;
 
   //joystick defines
   double leftX{m_controller.GetRawAxis(0)};
@@ -126,7 +82,6 @@ private:
   bool rBumper{m_controller.GetRawButton(6)};
 
   double deadzone = 0.05;
-
 
   Drivetrain m_swerve;
   units::velocity::meters_per_second_t prev_x_speed;
@@ -140,14 +95,7 @@ private:
   frc::SlewRateLimiter<units::scalar> m_rotLimiter{3 / 1_s};
 
   double rotSetpoint = m_swerve.doubleGyro();
-  int rotationCounter = 0;
   bool resetEncoder = false;
-  double gyroOld;
-
-  double flturnStay = m_swerve.m_frontLeft.m_turningEncoder.GetPosition();
-  double frturnStay = m_swerve.m_frontRight.m_turningEncoder.GetPosition();
-  double blturnStay = m_swerve.m_backLeft.m_turningEncoder.GetPosition();
-  double brturnStay = m_swerve.m_backRight.m_turningEncoder.GetPosition();
 
   void DriveWithJoystick(bool fieldRelative)
   {
@@ -180,7 +128,7 @@ private:
 
     if (lBumper == true && resetEncoder == false)
     {
-      resetTurnEncoder();
+      m_swerve.resetTurnEncoder();
       resetEncoder = true;
     }
     else if (lBumper == false && resetEncoder == true)
@@ -188,352 +136,44 @@ private:
       resetEncoder = false;
     }
 
-    /*if (leftX == 0 && leftY == 0 && rightX == 0)
+    /* This still needs something else, but I create a template for when we correct it
+    if (leftX == 0 && leftY == 0 && rightX == 0)
     {
-      m_swerve.m_frontLeft.m_turningEncoder.SetPosition(flturnStay);
-      m_swerve.m_frontRight.m_turningEncoder.SetPosition(frturnStay);
-      m_swerve.m_backLeft.m_turningEncoder.SetPosition(blturnStay);
-      m_swerve.m_backRight.m_turningEncoder.SetPosition(brturnStay);
-    }*/ //put something different in if statement
+      m_swerve.keepEncoderAngle();
+    } 
+    */
 
     auto xSpeed = /*strafe*/ m_xspeedLimiter.Calculate(leftX) * Drivetrain::kMaxSpeed;
 
     frc::SmartDashboard::PutNumber("xSpeed", xSpeed.to<double>());
-    // Get the y speed or sideways/strafe speed. We are inverting this because
-    // we want a positive value when we pull to the left. Xbox controllers
-    // return positive values when you pull to the right by default.
+
+    // Get the y speed or forward/back speed. We are inverting this because
+    // our controllers  return positive values when you pull to the back by default
     auto ySpeed = /*-forward*/ -m_yspeedLimiter.Calculate(leftY) * Drivetrain::kMaxSpeed;
     frc::SmartDashboard::PutNumber("ySpeed", ySpeed.to<double>());
+
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left
-
     frc::SmartDashboard::PutNumber("doubleGyro", m_swerve.doubleGyro());
 
     if (rightX == 0)
-    { //maybe works now
-      const double kProt = 2.5; //6, 5 has a bit less flutter
-      double currentRot = m_swerve.doubleGyro() + rotationCounter * 360;
+    {
+      m_swerve.correctRotation();
+      m_swerve.findRotError();
 
-      if ((rotSetpoint - currentRot) > 180)
-      {
-        rotationCounter++;
-      }
-      else if ((rotSetpoint - currentRot) < -180)
-      {
-        rotationCounter--;
-      }
+      m_swerve.printRotValues();
 
-      double rotError = (rotSetpoint - currentRot);
-
-      if (abs(rotError) < 1)
-      {
-        rotError = 0;
-      }
-
-      //frc::SmartDashboard::PutNumber("rotSetpoint", rotSetpoint);
-      frc::SmartDashboard::PutNumber("doubleGyro", m_swerve.doubleGyro());
-      //frc::SmartDashboard::PutNumber("rotError", rotError);
-      //frc::SmartDashboard::PutNumber("currentRot", currentRot);
-
-      if (rotError > 45)
-      {
-        rotError = 45;
-      } 
-      else if (rotError < -45)
-      {
-        rotError = -45;
-      }
-
-      auto rotStay = m_rotLimiter.Calculate((rotError / 180) * kProt) * Drivetrain::kMaxAngularSpeed;
+      auto rotStay = m_rotLimiter.Calculate((m_swerve.rotError / 180) * m_swerve.ROTATION_P) * Drivetrain::kMaxAngularSpeed;
       m_swerve.Drive(xSpeed, ySpeed, rotStay, fieldRelative, false, 0, 0); //field relative = true
     }
     else
     {
       auto rot = m_rotLimiter.Calculate(rightX) * Drivetrain::kMaxAngularSpeed;
-      m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0);  //field relative = true
+      m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
 
-      rotSetpoint = m_swerve.doubleGyro() /* + rotationCounter * 360*/; //maybe this should just be m_swerve.doubleGyro();
-    }
-
-    //m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
-    gyroOld = m_swerve.doubleGyro();
-  }
-
-  void DriveAutonomous(double direction, double distance, double maxVelocity, bool fieldRelative)
-  {
-
-    // Get the x speed. We are inverting this because Xbox controllers return
-    // negative values when we push forward.
-    /*double gyroDegrees = m_swerve.ahrs->GetYaw() * -1;
-    float gyroRadians = gyroDegrees * (wpi::math::pi / 180);
-    float forward = leftY * cos(gyroRadians) + leftX * sin(gyroRadians);
-    float strafe = -leftY * sin(gyroRadians) + leftX * cos(gyroRadians);*/
-
-    auto xSpeed = /*strafem_xspeedLimiter.Calculate(leftX) * Drivetrain::kMaxSpeed;*/ cos(direction * wpi::math::pi / 180) * Drivetrain::kMaxSpeed;
-
-    //frc::SmartDashboard::PutNumber("xSpeed", xSpeed.to<double>());
-    // Get the y speed or sideways/strafe speed. We are inverting this because
-    // we want a positive value when we pull to the left. Xbox controllers
-    // return positive values when you pull to the right by default.
-    auto ySpeed = /*-forward-m_yspeedLimiter.Calculate(leftY) * Drivetrain::kMaxSpeed*/ sin(direction * wpi::math::pi / 180) * Drivetrain::kMaxSpeed;
-
-    //frc::SmartDashboard::PutNumber("ySpeed", ySpeed.to<double>());
-    // Get the rate of angular rotation. We are inverting this because we want a
-    // positive value when we pull to the left
-
-    const double kProt = 5;
-    double currentRot = m_swerve.doubleGyro();
-
-    if ((rotSetpoint - currentRot) > 180)
-    {
-      rotationCounter++;
-    }
-    else if ((rotSetpoint - currentRot) < -180)
-    {
-      rotationCounter--;
-    }
-
-    double rotError = (rotSetpoint - currentRot);
-
-    if (abs(rotError) < .5)
-    {
-      rotError = 0;
-    }
-
-    //frc::SmartDashboard::PutNumber("rotSetpoint", rotSetpoint);
-    //frc::SmartDashboard::PutNumber("doubleGyro", m_swerve.doubleGyro());
-    //frc::SmartDashboard::PutNumber("rotError", rotError);
-    //frc::SmartDashboard::PutNumber("currentRot", currentRot);
-
-    auto rot = m_rotLimiter.Calculate((rotError / 180) * kProt) * Drivetrain::kMaxAngularSpeed;
-
-    m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, true, distance, maxVelocity); //field relative = true
-  }
-
-  void pauseAuto(double pauseTime)
-  {
-    m_swerve.m_frontLeft.pauseModule(pauseTime);
-    m_swerve.m_frontRight.pauseModule(pauseTime);
-    m_swerve.m_backLeft.pauseModule(pauseTime);
-    m_swerve.m_backRight.pauseModule(pauseTime);
-  }
-
-  void slalomAuto()
-  {
-    if (phase == 1)
-    { //1 -> 2
-      DriveAutonomous(0, 60, 800, true);
-    }
-    else if (phase == 2)
-    { //2 -> 3
-      DriveAutonomous(90, 60, 800, true);
-    }
-    else if (phase == 3)
-    { //3 -> 4
-      DriveAutonomous(0, 180, 800, true);
-    }
-    else if (phase == 4)
-    { //4 -> 5
-      DriveAutonomous(-90, 60, 800, true);
-    }
-    else if (phase == 5)
-    { //5 -> 6
-      DriveAutonomous(0, 60, 800, true);
-    }
-    else if (phase == 6)
-    { //6 -> 7
-      DriveAutonomous(90, 60, 800, true);
-    }
-    else if (phase == 7)
-    { //7 -> 8
-      DriveAutonomous(180, 60, 800, true);
-    }
-    else if (phase == 8)
-    { //8 -> 9
-      DriveAutonomous(270, 60, 800, true);
-    }
-    else if (phase == 9)
-    { //9 -> 10
-      DriveAutonomous(180, 180, 800, true);
-    }
-    else if (phase == 10)
-    { //10 -> 11
-      DriveAutonomous(90, 60, 800, true);
-    }
-    else if (phase == 11)
-    { //11 -> 12
-      DriveAutonomous(180, 60, 800, true);
+      rotSetpoint = m_swerve.doubleGyro() /* + rotationCounter * 360*/;
     }
   }
-
-  void barrelRaceAuto()
-  { //directions revised to have battery facing forward instead of to the right
-    if (phase == 1)
-    { //1 -> 2
-      //pauseTime = 0.5;
-      DriveAutonomous(90, 150, 3000, true); //double direction, double distance, double maxVelocity, bool fieldRelative
-    }
-    else if (phase == 2)
-    { //2 -> 3
-      //pauseAuto(1);
-      DriveAutonomous(0, 60/*48*/, 3000, true);
-    }
-    else if (phase == 3)
-    { //3 -> 4
-      DriveAutonomous(-90, 60/*48*/, 3000, true);
-    }
-    else if (phase == 4)
-    { //4 -> 5
-      DriveAutonomous(-180, 48, 3000, true);
-    }
-    else if (phase == 5)
-    { //5 -> 6
-      DriveAutonomous(90, 150/*138*/, 3000, true);
-    }
-    else if (phase == 6)
-    { //6 -> 7
-      DriveAutonomous(180, 60/*48*/, 3000, true);
-    }
-    else if (phase == 7)
-    { //7 -> 8
-      DriveAutonomous(-90, 60/*48*/, 3000, true);
-    }
-    else if (phase == 8)
-    { //8 -> 9
-      DriveAutonomous(0, 120/*96*/, 3000, true);
-    }
-    else if (phase == 9)
-    { //9 -> 10
-      DriveAutonomous(90, 120/*108*/, 3000, true);
-    }
-    else if (phase == 10)
-    { //10 -> 11
-      DriveAutonomous(180, 60/*48*/, 3000, true);
-    }
-    else if (phase == 11)
-    { //11 -> 12
-      DriveAutonomous(-90, 312/*300*/, 3000, true);
-      pauseTime = 5;
-    }
-    else if (phase == 12)
-    { //12 -> 13
-      DriveAutonomous(0, 0, 0, true);
-    }
-  }
-
-  void bounceAuto()
-  {
-    if (phase == 1)
-    {  //1 -> 2
-      DriveAutonomous(0, 30, 800, true); //double direction, double distance, double maxVelocity, bool fieldRelative
-    }
-    else if (phase == 2)
-    { //2 -> 3
-      DriveAutonomous(90, 60, 800, true);
-    }
-    else if (phase == 3)
-    { //3 -> 4
-      DriveAutonomous(-90, 60, 800, true);
-    }
-    else if (phase == 4)
-    { //4 -> 5
-      DriveAutonomous(0, 48, 800, true);
-    }
-    else if (phase == 5)
-    { //5 -> 6
-      DriveAutonomous(-90, 48, 800, true);
-    }
-    else if (phase == 6)
-    { //6 -> 7
-      DriveAutonomous(0, 42, 800, true);
-    }
-    else if (phase == 7)
-    { //7 -> 8
-      DriveAutonomous(90, 108, 800, true);
-    }
-    else if (phase == 8)
-    { //8 -> 9
-      DriveAutonomous(-90, 108, 800, true);
-    }
-    else if (phase == 9)
-    { //9 -> 10
-      DriveAutonomous(0, 90, 800, true);
-    }
-    else if (phase == 10)
-    { //10 -> 11
-      DriveAutonomous(90, 108, 800, true);
-    }
-    else if (phase == 11)
-    { //11 -> 12
-      DriveAutonomous(-90, 60, 800, true);
-    }
-    else if (phase == 11)
-    { //12 -> 13
-      DriveAutonomous(0, 72, 800, true);
-    }
-  }
-
-  double fl_relativeEncoder;
-  double fr_relativeEncoder;
-  double bl_relativeEncoder;
-  double br_relativeEncoder; 
-  void resetTurnEncoder()
-{
-
-  frc::SmartDashboard::PutNumber("Front Left Encoder Value", fl_relativeEncoder);
-    /*The following gets the gyro angle, compares it to where it is on the circle and then translates that to the
-    encoder
-    TODO: Wrong Math, need to implement the analog encoder in some way*/
-
-    /*PROBLEM:Currently snapping 45 degrees instead of zeroing*/
-    if (m_swerve.doubleGyro() <= 180)
-    {
-      fl_relativeEncoder = (-9/180) * m_swerve.doubleGyro();
-    }
-    else if (m_swerve.doubleGyro() > 180)
-    {
-      fl_relativeEncoder = ((-9/180) *  m_swerve.doubleGyro()) + 18; //changed 360 to 18
-    }
-
-    m_swerve.m_frontLeft.m_turningEncoder.SetPosition(fl_relativeEncoder);
-
-    if (m_swerve.doubleGyro() <= 180)
-    {
-      fr_relativeEncoder = (-9/180) * m_swerve.doubleGyro();
-    }
-    else if (m_swerve.doubleGyro() > 180)
-    {
-      fr_relativeEncoder = ((-9/180) *  m_swerve.doubleGyro()) + 18; 
-    }
-
-    m_swerve.m_frontRight.m_turningEncoder.SetPosition(fr_relativeEncoder);
-
-    if (m_swerve.doubleGyro() <= 180)
-    {
-      bl_relativeEncoder = (-9/180) * m_swerve.doubleGyro();
-    }
-    else if (m_swerve.doubleGyro() > 180)
-    {
-      bl_relativeEncoder = ((-9/180) *  m_swerve.doubleGyro()) + 18;
-    }
-
-    m_swerve.m_backLeft.m_turningEncoder.SetPosition(bl_relativeEncoder);
-
-    if (m_swerve.doubleGyro() <= 180)
-    {
-      br_relativeEncoder = (-9/180) * m_swerve.doubleGyro();
-    }
-    else if (m_swerve.doubleGyro() > 180)
-    {
-      br_relativeEncoder = ((-9/180) *  m_swerve.doubleGyro()) + 18;
-    }
-
-    m_swerve.m_backRight.m_turningEncoder.SetPosition(br_relativeEncoder);
-
-    std::cout << "encoder reset" << std::endl;
-    frc::Wait(0.02);
-}
-
 };
 
 #ifndef RUNNING_FRC_TESTS
@@ -541,7 +181,5 @@ int main()
 {
   return frc::StartRobot<Robot>();
 }
-
-
 
 #endif
