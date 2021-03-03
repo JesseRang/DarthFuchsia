@@ -44,11 +44,11 @@ void Drivetrain::Drive(units::meters_per_second_t xSpeed, units::meters_per_seco
   blb = m_backLeft.SetDesiredState(bl, autonomous, distance, maxVelocity); 
   brb = m_backRight.SetDesiredState(br, autonomous, distance, maxVelocity); 
 
-  if (flb + frb + blb + brb > 0) {
+  /*if (flb + frb + blb + brb > 0) {
     arrived = true;
   } else {
     arrived = false;
-  }
+  }*/ //for auton
 
   //frc::SmartDashboard::PutNumber("FLCurrentAngle", m_frontLeft.GetAngle());
   //frc::SmartDashboard::PutNumber("FRCurrentAngle", m_frontRight.GetAngle());

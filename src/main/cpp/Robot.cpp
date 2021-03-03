@@ -92,21 +92,20 @@ public:
   void TeleopInit() override
   {
     m_swerve.ahrs->ZeroYaw();
+    m_swerve.m_frontLeft.zeroTurnEncoder();
+    m_swerve.m_frontRight.zeroTurnEncoder();
+    m_swerve.m_backLeft.zeroTurnEncoder();
+    m_swerve.m_backRight.zeroTurnEncoder();
     /*Setting the encoders to mathc the position of the Gyro*/
-    resetTurnEncoder();
+    //resetTurnEncoder();
 
   }
 
   int first_loop = 0;
   void TeleopPeriodic() override
-  {
-    if(first_loop == 0){
-      resetTurnEncoder();
-      first_loop = 1;
-      frc::Wait(0.02);
-      }
+  { 
     //make a button to reset encoder values
-    DriveWithJoystick(true); //true = field relative, false = not field relative
+    DriveWithJoystick(false); //true = field relative, false = not field relative
     frc::SmartDashboard::PutNumber("fr encoder", frAnalog.GetVoltage());
     frc::SmartDashboard::PutNumber("fl encoder", flAnalog.GetVoltage());
     frc::SmartDashboard::PutNumber("bl encoder", blAnalog.GetVoltage());
@@ -178,7 +177,7 @@ private:
       IntakeMotor.Set(0);
     }
 
-    if (lBumper == true && resetEncoder == false)
+    /*if (lBumper == true && resetEncoder == false)
     {
       resetTurnEncoder();
       resetEncoder = true;
@@ -186,7 +185,7 @@ private:
     else if (lBumper == false && resetEncoder == true)
     {
       resetEncoder = false;
-    }
+    }*/
 
     /*if (leftX == 0 && leftY == 0 && rightX == 0)
     {
@@ -209,7 +208,7 @@ private:
 
     frc::SmartDashboard::PutNumber("doubleGyro", m_swerve.doubleGyro());
 
-    if (rightX == 0)
+    /*if (rightX == 0)
     { //maybe works now
       const double kProt = 2.5; //6, 5 has a bit less flutter
       double currentRot = m_swerve.doubleGyro() + rotationCounter * 360;
@@ -244,19 +243,24 @@ private:
         rotError = -45;
       }
 
-      auto rotStay = m_rotLimiter.Calculate((rotError / 180) * kProt) * Drivetrain::kMaxAngularSpeed;
+      auto rotStay = m_rotLimiter.Calculate(/*(rotError / 180) * kProt rightX) * Drivetrain::kMaxAngularSpeed;
       m_swerve.Drive(xSpeed, ySpeed, rotStay, fieldRelative, false, 0, 0); //field relative = true
     }
     else
-    {
+    {*/
       auto rot = m_rotLimiter.Calculate(rightX) * Drivetrain::kMaxAngularSpeed;
       m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0);  //field relative = true
 
       rotSetpoint = m_swerve.doubleGyro() /* + rotationCounter * 360*/; //maybe this should just be m_swerve.doubleGyro();
-    }
+    //}
 
     //m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
     gyroOld = m_swerve.doubleGyro();
+
+    frc::SmartDashboard::PutNumber("fl motor encoder", m_swerve.m_frontLeft.m_turningEncoder.GetPosition());
+    frc::SmartDashboard::PutNumber("fr motor encoder", m_swerve.m_frontRight.m_turningEncoder.GetPosition());
+    frc::SmartDashboard::PutNumber("bl motor encoder", m_swerve.m_backLeft.m_turningEncoder.GetPosition());
+    frc::SmartDashboard::PutNumber("br motor encoder", m_swerve.m_backRight.m_turningEncoder.GetPosition());
   }
 
   void DriveAutonomous(double direction, double distance, double maxVelocity, bool fieldRelative)
@@ -486,46 +490,56 @@ private:
     TODO: Wrong Math, need to implement the analog encoder in some way*/
 
     /*PROBLEM:Currently snapping 45 degrees instead of zeroing*/
-    if (m_swerve.doubleGyro() <= 180)
+    /*STEP 1*/
+    double gyroAngle = m_swerve.doubleGyro() + 180; //gets the heading from the Navx Board, 0 - 360
+    /*STEP 2*/
+    double resetPosition = gyroAngle/180 * 9; //convert the angle to encoder clicks
+    /*STEP 3*/
+    /*m_swerve.m_frontLeft.m_turningEncoder.SetPosition(resetPosition); //set all the new encoder positions
+    m_swerve.m_frontRight.m_turningEncoder.SetPosition(resetPosition);
+    m_swerve.m_backLeft.m_turningEncoder.SetPosition(resetPosition);
+    m_swerve.m_backRight.m_turningEncoder.SetPosition(resetPosition);*/
+
+    if (flAnalog.GetVoltage() <= 2.45)
     {
-      fl_relativeEncoder = (-9/180) * m_swerve.doubleGyro();
+      fl_relativeEncoder = (-9/2.45) * flAnalog.GetVoltage();
     }
-    else if (m_swerve.doubleGyro() > 180)
+    else if (flAnalog.GetVoltage() > 2.45)
     {
-      fl_relativeEncoder = ((-9/180) *  m_swerve.doubleGyro()) + 18; //changed 360 to 18
+      fl_relativeEncoder = ((-9/2.45) *  flAnalog.GetVoltage()) + 18; //changed 360 to 18
     }
 
     m_swerve.m_frontLeft.m_turningEncoder.SetPosition(fl_relativeEncoder);
 
-    if (m_swerve.doubleGyro() <= 180)
+    if (frAnalog.GetVoltage() <= 2.45)
     {
-      fr_relativeEncoder = (-9/180) * m_swerve.doubleGyro();
+      fr_relativeEncoder = (-9/2.45) * frAnalog.GetVoltage();
     }
-    else if (m_swerve.doubleGyro() > 180)
+    else if (frAnalog.GetVoltage() > 2.45)
     {
-      fr_relativeEncoder = ((-9/180) *  m_swerve.doubleGyro()) + 18; 
+      fr_relativeEncoder = ((-9/2.45) *  frAnalog.GetVoltage()) + 18; 
     }
 
     m_swerve.m_frontRight.m_turningEncoder.SetPosition(fr_relativeEncoder);
 
-    if (m_swerve.doubleGyro() <= 180)
+    if (blAnalog.GetVoltage() <= 2.45)
     {
-      bl_relativeEncoder = (-9/180) * m_swerve.doubleGyro();
+      bl_relativeEncoder = (-9/2.45) * blAnalog.GetVoltage();
     }
-    else if (m_swerve.doubleGyro() > 180)
+    else if (blAnalog.GetVoltage() > 2.45)
     {
-      bl_relativeEncoder = ((-9/180) *  m_swerve.doubleGyro()) + 18;
+      bl_relativeEncoder = ((-9/2.45) *  blAnalog.GetVoltage()) + 18;
     }
 
     m_swerve.m_backLeft.m_turningEncoder.SetPosition(bl_relativeEncoder);
 
-    if (m_swerve.doubleGyro() <= 180)
+    if (brAnalog.GetVoltage() <= 2.45)
     {
-      br_relativeEncoder = (-9/180) * m_swerve.doubleGyro();
+      br_relativeEncoder = (-9/2.45) * brAnalog.GetVoltage();
     }
-    else if (m_swerve.doubleGyro() > 180)
+    else if (brAnalog.GetVoltage() > 2.45)
     {
-      br_relativeEncoder = ((-9/180) *  m_swerve.doubleGyro()) + 18;
+      br_relativeEncoder = ((-9/2.45) *  brAnalog.GetVoltage()) + 18;
     }
 
     m_swerve.m_backRight.m_turningEncoder.SetPosition(br_relativeEncoder);

@@ -22,26 +22,29 @@ double dkP = 0.0003, dkI = 1e-6, dkD = 0.00003, dkIz = 0.001, dkFF = 0.000156, d
 double kMaxVel = 2000, kMinVel = 0, kMaxAcc = 1500, kAllErr = 0;
 const double MaxRPM = 5700;
 
-SwerveModule::SwerveModule(const int driveMotorChannel, const int turningMotorChannel) : m_driveMotor{driveMotorChannel, brushless}, m_turningMotor{turningMotorChannel, brushless}
+SwerveModule::SwerveModule(const int driveMotorChannel, const int turningMotorChannel, double gyroStartAng) : m_driveMotor{driveMotorChannel, brushless}, m_turningMotor{turningMotorChannel, brushless}
 {
     frc::AnalogInput m_analog{turningMotorChannel/2 -1};
 
     m_turningMotor.RestoreFactoryDefaults();
     m_driveMotor.RestoreFactoryDefaults();
-    m_driveEncoder.SetPosition(0);
+    //m_driveEncoder.SetPosition(0);
 
     double relativeEncoder = 0;
 
-    /*if (m_swerve.doubleGyro() <= 180) 
-      relativeEncoder = (-9/180) * m_swerve.doubleGyro();
-    else if(m_swerve.doubleGyro() > 2.45) 
-      relativeEncoder = (-9/180) * m_swerve.doubleGyro() + 18;
+    //m_turnPIDController.SetFeedbackDevice(m_turningMotor.GetAnalog());
+    
+    if (m_analog.GetVoltage() <= 2.45) 
+      relativeEncoder = (-9/2.45) * m_analog.GetVoltage();
+    else if(m_analog.GetVoltage() > 2.45) 
+      relativeEncoder = (-9/2.45) * m_analog.GetVoltage() + 18;
 
     std::cout << "relative encoder: " << relativeEncoder << "  m_analog: " << m_analog.GetVoltage() << std::endl;
     
-    m_turningEncoder.SetPosition(relativeEncoder);*/
+    //m_turningEncoder.SetPosition(relativeEncoder);
+    //double start_position = gyroStartAng + 180 / 180 * 9;
 
-    m_turningEncoder.SetPosition(0);
+    //m_turningEncoder.SetPosition(start_position);
 
     frc::Wait(.002);
 
@@ -71,7 +74,7 @@ SwerveModule::SwerveModule(const int driveMotorChannel, const int turningMotorCh
     m_turnPIDController.SetD(frc::SmartDashboard::GetNumber("Turn D", 0));
     m_turnPIDController.SetIZone(frc::SmartDashboard::GetNumber("Turn kIz", kIz));
     m_turnPIDController.SetFF(frc::SmartDashboard::GetNumber("Turn kFF", 0));
-    m_turnPIDController.SetOutputRange(-1.0, 1.0); //used to be -pi and pi
+    m_turnPIDController.SetOutputRange(-9, 9); //used to be -pi and pi
 
     m_drivePIDController.SetSmartMotionMaxVelocity(kMaxVel);
     m_drivePIDController.SetSmartMotionMinOutputVelocity(kMinVel);
@@ -104,8 +107,8 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
     double current = m_turningEncoder.GetPosition(); 
 
     // Set the motor outputs.
-    if (autonomous == 0) {
-        m_drivePIDController.SetReference(stateSpeed /* speedFlip*/ * 435, rev::ControlType::kVelocity); //*3000
+    if (!autonomous) {
+        m_drivePIDController.SetReference(stateSpeed * speedFlip * 435, rev::ControlType::kVelocity); //*3000
         //std::cout << "speed reference" <<stateSpeed * speedFlip * 435 << std::endl;
     } else {
         //kMaxVel = maxVelocity;
@@ -116,27 +119,29 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
     
     frc::SmartDashboard::PutNumber("Drive Speed", state.speed.to<double>() * 500);
 
-    //get rotations of motor and multiply by radians to get double
-    if (((current - command) > 9)) {
-        while((current - command) > 9) {
+    //this plus speed flip causes the robot to spin non stop
+    frc::SmartDashboard::PutNumber("Current - Command", current - command);
+    if (((current - command) >= 9)) 
+    {
+        while((current - command) >= 9) {
         command += 18;
         }
     } else {
-         while ((current - command) < -9) {
+         while((current - command) < -9) {
              command -= 18;
          }
-     }
+    } 
     
 
-    /*if (abs(current - command) >= 4.5 && flipping == 0) {
+    if (abs(current - command) >= 4.5 && flipping == 0) {    //changed the inequality signs to <,> from =<,=>
             m_turningEncoder.SetPosition(current + 9);
             speedFlip *= -1;
             flipping = 1;
        //std::cout << "flipped  " << "flipping: " << flipping << std::endl;
-    } else if (abs(current - command) <= 4.5 && flipping == 1) {
+    } else if (abs(current - command) < 4.5 && flipping == 1) {
         flipping = 0;
       //std::cout << "flipped  " << "flipping: " << flipping << std::endl;
-    }*/
+    }
 
     frc::SmartDashboard::PutNumber("Drive P", dkP);
     //frc::SmartDashboard::PutNumber("Drive I", dkI);
@@ -150,14 +155,15 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
         dkD = frc::SmartDashboard::GetNumber("Drive D", dkD);
     }
 
-    frc::SmartDashboard::PutNumber("encoder command", m_turningEncoder.GetPosition() +9);
+    frc::SmartDashboard::PutNumber("encoder command", m_turningEncoder.GetPosition());
     frc::SmartDashboard::PutNumber("speed flip", speedFlip);
     
     m_turnPIDController.SetReference(command, rev::ControlType::kPosition);
-    this->lastCommand = command - (18*(lastCommand/abs(lastCommand)));
+    //this->lastCommand = command - (18*(lastCommand/abs(lastCommand)));
     frc::SmartDashboard::PutNumber("Encoder Position", m_turningEncoder.GetPosition() * 9);
     frc::SmartDashboard::PutNumber("Turn Set Reference", (doubleangle / wpi::math::pi) * 9);
     frc::SmartDashboard::PutNumber("Rotate Speed", doubleangle);
+    frc::SmartDashboard::PutNumber("command", command);
 
     //std::cout << "error: " << m_error << std::endl;
 
@@ -173,5 +179,14 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
 
 void SwerveModule::zeroDriveEncoder() {
     m_driveEncoder.SetPosition(0);
+}
+
+void SwerveModule::zeroTurnEncoder() {
+    rev::CANAnalog m_analogSensor = m_turningMotor.GetAnalog(); //get the analog
+    //home position of analog encoder is 2.45
+    //get the difference between the home pos and the current pos on startup
+    double dist_to_home = m_analogSensor.GetVoltage() - 2.45;
+    dist_to_home *= 
+
 }
 
