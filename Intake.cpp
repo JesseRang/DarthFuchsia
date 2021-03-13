@@ -63,7 +63,7 @@ void Intake::Run()
 
 void Intake::intake()
 {
-    Intake::intakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, indexMotorDefault);
+    intakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.6);
     vMotor1.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, vMotorDefault);
     vMotor2.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, vMotorDefault + 0.2);
     intakeLogic();
