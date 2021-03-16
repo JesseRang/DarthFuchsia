@@ -4,6 +4,7 @@
 #include <ctre/phoenix/motorcontrol/can/TalonFX.h>
 #include <ctre/Phoenix.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/Servo.h>
 
 class Shooter
 {
@@ -11,8 +12,8 @@ private:
     frc::Joystick driverController{0};
     frc::Joystick operatorController{1};
 
-    ctre::phoenix::motorcontrol::can::TalonFX::TalonFX shooterMotorL{0};
-    ctre::phoenix::motorcontrol::can::TalonFX::TalonFX shooterMotorR{1};
+    ctre::phoenix::motorcontrol::can::TalonFX shooterMotorL{0};
+    ctre::phoenix::motorcontrol::can::TalonFX shooterMotorR{1};
 
     double shooterF = 0.0453;
     double shooterP = 0.15;
@@ -26,19 +27,23 @@ private:
     bool initButtonPressed = false;
     // Operator A
     bool wallButtonPressed = false;
-    // Operator B
-    bool limelightButtonPressed = false;
     // Driver A
     bool isLimelightActive = false;
+    // Driver Right Trigger
+    bool isShooting = false;
 
     double trenchSpeed = 6000;
     double initSpeed = 5500;
     double wallSpeed = 2700;
     double limelightSpeed = 0;
 
+    double flyWheelDesiredSpeed = 0;
+
     bool limelightHasTarget = false;
 
     int timeoutMS = 30;
+
+    frc::Servo hoodServo{1};
 
     Intake shooterConveyor;
 
@@ -50,19 +55,20 @@ public:
 
     void Shoot();
 
-    void printCurrentSpeeds();
     void printShooterSpeeds();
-    void setShooterSpeeds();
+    void getShooterSpeeds();
 
+    // Displays PIDF Values on Smart Dashboard
     void printPIDFValues();
-    void printCurrentPIDFValues();
-    void setPIDFValues();
+    // Gets the value of Smart Dashboard
+    void getPIDFValues();
+    // Sets motors to PIDF previously gotten
+    void setPIDFValues(bool isWallShot);
 
     void setLimelightSpeed();
 
     void activateConveyor();
-    void modifyVelocity();
+    void modifyWheelVelocity();
 
-    void setShooterPIDF(bool isWallShot);
-    void setHoodPosition();
+    void setHoodPosition(float position);
 };

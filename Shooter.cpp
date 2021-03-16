@@ -19,7 +19,7 @@ void Shooter::Initiate()
     shooterMotorL.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
     shooterMotorR.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
 
-    setShooterPIDF(false);
+    setPIDFValues(false);
 }
 
 // Run in Periodic
@@ -28,16 +28,19 @@ void Shooter::updateButtons()
     trenchButtonPressed = operatorController.GetRawButton(4);
     initButtonPressed = operatorController.GetRawButton(1);
     wallButtonPressed = operatorController.GetRawButton(2);
-    limelightButtonPressed = operatorController.GetRawButton(3);
-    
+
+    isShooting = driverController.GetRawAxis(3);
+
     isLimelightActive = driverController.GetRawButton(2);
 }
 
-// Connect to shoot button in Robot.cpp
 void Shooter::Shoot()
 {
-    modifyVelocity();
-    activateConveyor();
+    if (isShooting)
+    {
+        modifyWheelVelocity();
+        activateConveyor();
+    }
 }
 
 void Shooter::printShooterSpeeds()
@@ -48,12 +51,12 @@ void Shooter::printShooterSpeeds()
     frc::SmartDashboard::PutNumber("limelightSpeed", limelightSpeed);
 }
 
-void Shooter::setShooterSpeeds()
+void Shooter::getShooterSpeeds()
 {
     trenchSpeed = frc::SmartDashboard::GetNumber("Trench Speed", 6000);
     initSpeed = frc::SmartDashboard::GetNumber("Init Speed", 5500);
     wallSpeed = frc::SmartDashboard::GetNumber("Wall Speed", 2700);
-    
+
     setLimelightSpeed();
 }
 
@@ -68,7 +71,7 @@ void Shooter::printPIDFValues()
     frc::SmartDashboard::PutNumber("ShooterVelocity", shooterMotorL.GetSelectedSensorVelocity() / 3.4133);
 }
 
-void Shooter::setPIDFValues()
+void Shooter::getPIDFValues()
 {
     shooterF = frc::SmartDashboard::GetNumber("ShooterF", 0.047);
     shooterP = frc::SmartDashboard::GetNumber("ShooterP", 0.125);
@@ -77,7 +80,7 @@ void Shooter::setPIDFValues()
     wallP = frc::SmartDashboard::GetNumber("WallP", 0);
 }
 
-void Shooter::setShooterPIDF(bool isWallShot)
+void Shooter::setPIDFValues(bool isWallShot)
 {
     shooterMotorL.Config_kF(0, shooterF, timeoutMS);
     shooterMotorL.Config_kI(0, shooterI, timeoutMS);
@@ -103,87 +106,81 @@ void Shooter::setLimelightSpeed()
         }
         else
         {
-    
             limelightHasTarget = true;
         }
         if (limelightHasTarget)
         {
             if (ty > 0)
                 limelightSpeed = 0;
-            
+
             else if (ty < 0 && ty >= -0.49)
                 limelightSpeed = 6300;
 
             else if (ty < -0.49 && ty >= -6.17)
                 limelightSpeed = 5500;
-            
+
             else if (ty < -6.17 && ty >= -7.87)
                 limelightSpeed = 5400;
-            
+
             else if (ty < -7.17 && ty >= -8.86)
                 limelightSpeed = 5500;
-            
+
             else if (ty < -8.86 && ty >= -13.55)
                 limelightSpeed = 5600;
-            
+
             else if (ty < -13.55 && ty >= -14.28)
                 limelightSpeed = 5900;
-            
+
             else if (ty < -14.28 && ty >= 15)
                 limelightSpeed = 6300;
-            
+
             else
                 limelightSpeed = 0;
-            
         }
     }
 }
 
-        void Shooter::activateConveyor()
-        {
-            shooterConveyor.indexMotor.Set(0.9);
-            if (trenchButtonPressed)
-                shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 1);
+void Shooter::activateConveyor()
+{
+    shooterConveyor.indexMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.9);
+    if (trenchButtonPressed)
+        shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 1);
 
-            else if (initButtonPressed)
-                shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.7);
+    else if (initButtonPressed)
+        shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.7);
 
-            else if (wallButtonPressed)
-                shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.5);
+    else if (wallButtonPressed)
+        shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.5);
 
-            else if (limelightButtonPressed)
-                shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.7);
-        }
-        void Shooter::modifyVelocity()
-        {
-            double modValue = 3.4133;
-            double flyWheelDesiredSpeed = 0;
+    else if (isLimelightActive)
+        shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.7);
+}
 
-            if (trenchButtonPressed)
-            {
-                flyWheelDesiredSpeed = trenchSpeed * modValue;
-            }
-            else if (initButtonPressed)
-            {
-                flyWheelDesiredSpeed = initSpeed * modValue;
-            }
-            else if (wallButtonPressed)
-            {
-                flyWheelDesiredSpeed = wallSpeed * modValue;
-            }
-            else if (limelightButtonPressed)
-            {
-                flyWheelDesiredSpeed = limelightSpeed * modValue;
-            }
-            else
-            {
-                flyWheelDesiredSpeed = 0;
-            }
+void Shooter::modifyWheelVelocity()
+{
+    double modValue = 3.4133;
 
-            shooterMotorL.Set(TalonFXControlMode::Velocity, flyWheelDesiredSpeed);
-        }
+    if (trenchButtonPressed)
+        flyWheelDesiredSpeed = trenchSpeed * modValue;
 
-        void Shooter::setHoodPosition()
-        {
-            //Fill out when we have the actuator Docs
-        }
+    else if (initButtonPressed)
+        flyWheelDesiredSpeed = initSpeed * modValue;
+
+    else if (wallButtonPressed)
+        flyWheelDesiredSpeed = wallSpeed * modValue;
+
+    else if (isLimelightActive)
+        flyWheelDesiredSpeed = limelightSpeed * modValue;
+
+    else
+        flyWheelDesiredSpeed = 0;
+
+    shooterMotorL.Set(TalonFXControlMode::Velocity, flyWheelDesiredSpeed);
+}
+
+void Shooter::setHoodPosition(float position)
+{
+    // 0 - 1. 0 fully extended and 1 is fully retracted
+    hoodServo.SetBounds(2.0, 1.8, 1.5, 1.2, 1.0);
+    hoodServo.SetSpeed(1);
+}

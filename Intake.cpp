@@ -6,44 +6,53 @@
 #include <frc/Joystick.h>
 #include "Intake.h"
 
-// Use this in robot init // Delete unused solenoid
-void Intake::motorSetup()
+// Use this in robot init
+void Intake::Initiate()
 {
-    toggleIntakePosition(solenoidUp);
-    intakeMotor.ConfigContinuousCurrentLimit(5, 0);
-    intakeFollower.Follow(intakeMotor);
+    intakeMotor.SetInverted(true);
+    //intakeMotor.ConfigContinuousCurrentLimit(5, 0);
 
-    conveyorMotor.ConfigContinuousCurrentLimit(5, 0);
+    //conveyorMotor.ConfigContinuousCurrentLimit(5, 0);
     conveyorMotor.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
+    conveyorMotor.SetInverted(true);
 
-    indexMotor.SetSmartCurrentLimit(5);
-    indexMotor.SetInverted(true);
+    //indexMotor.ConfigContinuousCurrentLimit(5, 0);
 }
 
 void Intake::updateButtons()
 {
-    isIntaking = driverController.GetRawButton(7);
+    isIntaking = driverController.GetRawAxis(2);
     isCycling = driverController.GetRawButton(5);
-    isPurging = operatorController.GetRawButton(7);
+    isPurging = operatorController.GetRawAxis(2);
     isReversingV = operatorController.GetRawButton(8);
+    isTogglingIntake = driverController.GetRawButton(1);
 }
 
-void Intake::toggleIntakePosition(bool solenoidUp)
+void Intake::toggleIntakePosition()
 {
-    // Delete unused solenoid
-    if (solenoidUp)
+    /*
+    if (isTogglingIntake)
     {
-        //intakeSolenoid.Set(false);
-        //intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
-        solenoidUp = false;
-    } 
-    else 
-    {
-        //intakeSolenoid.Set(true);
-        //intakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
-        solenoidUp = true;
+        //intakeSolenoid.Toggle();
+        /*  if (solenoidUp && firstTogglePress)
+        {
+            intakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+            solenoidUp = false;
+            std::printf("Lowering Solenoid\n");
+        }
+        else if (!solenoidUp && firstTogglePress)
+        {
+            std::printf("Raising Solenoid\n");
+            intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+            solenoidUp = true;
+        }
+        firstTogglePress = false;
     }
-
+    else
+    {
+        std::printf("reset");
+        firstTogglePress = true;
+    } */
 }
 
 void Intake::Run()
@@ -56,7 +65,7 @@ void Intake::Run()
     else if (isPurging)
         purgeSystem();
     else if (isReversingV)
-        reverseV();
+        reverseIndex();
     else
         shutDown();
 }
@@ -64,34 +73,27 @@ void Intake::Run()
 void Intake::intake()
 {
     intakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.6);
-    vMotor1.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, vMotorDefault);
-    vMotor2.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, vMotorDefault + 0.2);
     intakeLogic();
 }
 void Intake::cycleBalls()
 {
     intakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
-    vMotor1.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, vMotorDefault);
-    vMotor2.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, vMotorDefault + 0.2);
     intakeLogic();
 }
 void Intake::purgeSystem()
 {
     intakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, -0.5);
-    conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, -0.5);
-    indexMotor.Set(-1);
+    conveyorMotor.Set(ctre::phoenix::motorcontrol::VictorSPXControlMode::PercentOutput, -0.5);
+    indexMotor.Set(ctre::phoenix::motorcontrol::VictorSPXControlMode::PercentOutput, -1);
 }
-void Intake::reverseV()
+void Intake::reverseIndex()
 {
-    vMotor1.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, -0.5);
-    vMotor2.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, -0.5);
+    indexMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, -1);
 }
 void Intake::shutDown()
 {
     intakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
-    vMotor1.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
-    vMotor2.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
-    indexMotor.Set(0);
+    indexMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
     conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
 }
 
@@ -99,13 +101,18 @@ void Intake::intakeLogic()
 {
     intakeFull = !breakBeamFull.Get();
     newBall = !breakBeamNewBall.Get();
-    fourBalls = !breakBeamFourthBall.Get();
     fiveBalls = !breakBeamFifthBall.Get();
+   /*  std::printf("New Ball\b\n", newBall);
+    std::printf("Intake Full\b\n", intakeFull); */
+    std::cout << "Intake Full\n" << intakeFull << " " << !breakBeamFull.Get();
 
-    if (intakeFull && newBall && fourBalls && fiveBalls)
-        indexMotor.Set(0);
+    /* if (intakeFull && newBall && fiveBalls)
+    {
+        indexMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
+
+    }
     else
-        indexMotor.Set(0.5);
+        indexMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.5);
 
     if (intakeFull)
         conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
@@ -113,4 +120,4 @@ void Intake::intakeLogic()
         conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.3);
     else
         conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0);
-}
+ */}
