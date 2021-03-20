@@ -30,7 +30,7 @@ public:
   bool flipping;
   double m_error;
 
-  SwerveModule(int driveMotorChannel, int turningMotorChannel);
+  SwerveModule(int driveMotorChannel, int turningMotorChannel, double gyroStartAng);
   frc::SwerveModuleState GetState();
 
   double GetVelocity()
@@ -65,6 +65,7 @@ double PrintSetVelocity(const frc::SwerveModuleState &state)
   rev::CANPIDController m_turnPIDController = m_turningMotor.GetPIDController();
 
   void zeroDriveEncoder();
+  void zeroTurnEncoder();
   bool pauseModule(double time);
 
 private:

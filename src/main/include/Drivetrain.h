@@ -25,6 +25,7 @@ class Drivetrain {
   NetworkTable *table;
   frc::LiveWindow *lw = NULL;
   AHRS *ahrs = new AHRS(frc::SPI::Port::kMXP);
+  double start_gyro = ahrs->GetAngle();
   Drivetrain() {  ahrs->ZeroYaw(); }
 
   frc::SwerveModuleState pfl;
@@ -32,10 +33,10 @@ class Drivetrain {
   frc::SwerveModuleState pbl;
   frc::SwerveModuleState pbr;
 
-  SwerveModule m_frontRight{1, 2};
-  SwerveModule m_frontLeft{3, 4};
-  SwerveModule m_backLeft{5, 6};
-  SwerveModule m_backRight{7, 8};
+  SwerveModule m_frontRight{1, 2, start_gyro};
+  SwerveModule m_frontLeft{3, 4, start_gyro};
+  SwerveModule m_backLeft{5, 6, start_gyro};
+  SwerveModule m_backRight{7, 8, start_gyro};
 
   int flb;
   int frb;
