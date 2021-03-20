@@ -13,14 +13,25 @@
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
 #include <ctre/Phoenix.h>
 
+#include <networktables/NetworkTable.h>
+#include <networktables/NetworkTableInstance.h>
+
 #include <frc/Drive/RobotDriveBase.h>
 
-//#include <frc/XboxController.h>
 #include <frc/Joystick.h>
 
 #include "Drivetrain.h"
+#include "Intake.h"
+#include "Shooter.h"
 
 WPI_TalonFX IntakeMotor{0};
+
+frc::DigitalInput breakBeamNewBall{6}; //right after the V
+frc::DigitalInput breakBeamIndex{7}; //near the indexer wheel below the conveyor
+frc::DigitalInput breakBeamConveyorStart{8}; //at the start of the conveyor
+frc::DigitalInput breakBeamFull{9}; //at the top of the conveyor
+
+
 
 frc::Timer timer;
 frc::Timer arrivedTimer;
@@ -29,10 +40,17 @@ frc::AnalogInput blAnalog{2};
 frc::AnalogInput frAnalog{0};
 frc::AnalogInput flAnalog{1};
 
+frc::DoubleSolenoid intakeSolenoid{2, 3};
+
+std::shared_ptr<NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+double ty = table->GetNumber("ty", 0.0);
+double tv = table->GetNumber("tv", 0.0);
+
 class Robot : public frc::TimedRobot
 {
-
 public:
+  Shooter driveShooter;
+  Intake driveIntake;
   int phase;
 
   void AutonomousInit() override
@@ -41,6 +59,8 @@ public:
     m_swerve.m_frontRight.zeroDriveEncoder();
     m_swerve.m_backLeft.zeroDriveEncoder();
     m_swerve.m_backRight.zeroDriveEncoder();
+
+    intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
 
     //resetTurnEncoder();
 
@@ -52,7 +72,6 @@ public:
 
     arrivedTimer.Reset();
     arrivedTimer.Start();
-    
 
     m_swerve.arrived = false;
 
@@ -65,7 +84,8 @@ public:
   {
     if (m_swerve.arrived == true)
     {
-      if (arrivedTimer.Get() > pauseTime) {
+      if (arrivedTimer.Get() > pauseTime)
+      {
         m_swerve.m_frontLeft.zeroDriveEncoder();
         m_swerve.m_frontRight.zeroDriveEncoder();
         m_swerve.m_backLeft.zeroDriveEncoder();
@@ -80,7 +100,7 @@ public:
     }
     else
     {
-     arrivedTimer.Reset();
+      arrivedTimer.Reset();
     }
 
     std::cout << "arrived " << m_swerve.arrived << "  phase " << phase << "  drive encoder " << m_swerve.m_frontLeft.m_driveEncoder.GetPosition() << std::endl;
@@ -91,6 +111,9 @@ public:
 
   void TeleopInit() override
   {
+    intakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+    driveShooter.Initiate();
+    driveIntake.Initiate();
     m_swerve.ahrs->ZeroYaw();
     m_swerve.m_frontLeft.zeroTurnEncoder();
     m_swerve.m_frontRight.zeroTurnEncoder();
@@ -98,34 +121,103 @@ public:
     m_swerve.m_backRight.zeroTurnEncoder();
     /*Setting the encoders to mathc the position of the Gyro*/
     //resetTurnEncoder();
-
   }
 
   int first_loop = 0;
+  bool isTogglingIntake;
+  bool solenoidUp = false;
+
+  bool firstTogglePress = true;
+
+  //Driver Y
+  bool hoodForwardBtn = false;
+  //Driver X
+  bool hoodBackBtn = false;
+
+  float position = 0;
+
   void TeleopPeriodic() override
-  { 
-    //make a button to reset encoder values
-    DriveWithJoystick(false); //true = field relative, false = not field relative
+  {
+    driveRTrigger = driverController.GetRawAxis(3); //added on 3/19 to program shooter to trigger
+    bool limelightHasTarget = false;
+    if (tv < 1.0)
+    {
+      limelightHasTarget = false;
+    }
+    else
+    {
+      limelightHasTarget = true;
+    }
+
+
+    driveShooter.updateLimelight(ty, limelightHasTarget);
+    driveShooter.updateButtons();
+    driveIntake.updateBreakBeams(breakBeamNewBall.Get(), breakBeamIndex.Get(), breakBeamConveyorStart.Get(), breakBeamFull.Get());
+    driveIntake.updateButtons();
+    isTogglingIntake = driveIntake.driverController.GetRawButton(1);
+
+        //make a button to reset encoder values
+    //DriveWithJoystick(false); //true = field relative, false = not field relative
     frc::SmartDashboard::PutNumber("fr encoder", frAnalog.GetVoltage());
     frc::SmartDashboard::PutNumber("fl encoder", flAnalog.GetVoltage());
     frc::SmartDashboard::PutNumber("bl encoder", blAnalog.GetVoltage());
     frc::SmartDashboard::PutNumber("br encoder", brAnalog.GetVoltage());
+
+    driveIntake.Run();
+
+    std::cout << "index beam" << breakBeamIndex.Get() << std::endl;
+    //std::cout << "New Ball Sensor " << breakBeamConveyorStart.Get() << std::endl;
+    //std::cout << "Intake Full Sensor " << breakBeamFull.Get() << std::endl;
+      
+    if (isTogglingIntake)
+    {
+      if (solenoidUp && firstTogglePress)
+      {
+        intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+        solenoidUp = false;
+      }
+      else if (!solenoidUp && firstTogglePress)
+      {
+
+        intakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+        solenoidUp = true;
+      }
+      firstTogglePress = false;
+    }
+    else
+    {
+      firstTogglePress = true;
+    }
+
+    hoodForwardBtn = driverController.GetRawButton(4);
+    hoodBackBtn = driverController.GetRawButton(3);
+
+    /*if (hoodForwardBtn)
+      position = 1;
+    else if (hoodBackBtn)
+      position = -1;*/
+
+    //driveShooter.setHoodPosition(position);
+    driveShooter.Shoot();
   }
 
 private:
-  frc::Joystick m_controller{0};
+  frc::Joystick driverController{0};
+  frc::Joystick operatorController{1};
 
   //joystick defines
-  double leftX{m_controller.GetRawAxis(0)};
-  double leftY{m_controller.GetRawAxis(1)};
-  double rightX{m_controller.GetRawAxis(4)}; //4 on gamepad
+  double driveLeftX{driverController.GetRawAxis(0)};
+  double driveLeftY{driverController.GetRawAxis(1)};
+  double driveRightX{driverController.GetRawAxis(4)}; //4 on gamepad
 
-  double lTrigger{m_controller.GetRawAxis(2)};
-  bool lBumper{m_controller.GetRawButton(5)};
-  bool rBumper{m_controller.GetRawButton(6)};
+  double driveLTrigger{driverController.GetRawAxis(2)};
+  double driveRTrigger{driverController.GetRawAxis(3)};
+  bool driveLBumper{driverController.GetRawButton(5)};
+  bool driveRBumper{driverController.GetRawButton(6)};
+
+  bool operatorBtnA{operatorController.GetRawButton(2)};
 
   double deadzone = 0.05;
-
 
   Drivetrain m_swerve;
   units::velocity::meters_per_second_t prev_x_speed;
@@ -150,65 +242,66 @@ private:
 
   void DriveWithJoystick(bool fieldRelative)
   {
-    lBumper = m_controller.GetRawButton(5);
-    lTrigger = m_controller.GetRawAxis(2);
+    driveLBumper = driverController.GetRawButton(5);
+    driveLTrigger = driverController.GetRawAxis(2);
 
-    leftX = m_controller.GetRawAxis(0);
-    leftY = m_controller.GetRawAxis(1);
-    rightX = -m_controller.GetRawAxis(4);
+    driveLeftX = driverController.GetRawAxis(0);
+    driveLeftY = driverController.GetRawAxis(1);
+    driveRightX = -driverController.GetRawAxis(4);
 
-    if (leftY < deadzone && leftY > (deadzone * -1) && leftX < deadzone && leftX > (deadzone * -1))
+    if (driveLeftY < deadzone && driveLeftY > (deadzone * -1) && driveLeftX < deadzone && driveLeftX > (deadzone * -1))
     {
-      leftY = 0;
-      leftX = 0;
+      driveLeftY = 0;
+      driveLeftX = 0;
     }
 
-    if (rightX < deadzone && rightX > (deadzone * -1))
+    if (driveRightX < deadzone && driveRightX > (deadzone * -1))
     {
-      rightX = 0;
+      driveRightX = 0;
     }
 
-    if (lTrigger > 0)
+    if (driveLTrigger > 0)
     {
-      IntakeMotor.Set(ControlMode::PercentOutput, -lTrigger);
+      IntakeMotor.Set(ControlMode::PercentOutput, -driveLTrigger);
     }
     else
     {
       IntakeMotor.Set(0);
     }
 
-    /*if (lBumper == true && resetEncoder == false)
+    /*if (driveLBumper == true && resetEncoder == false)
     {
       resetTurnEncoder();
       resetEncoder = true;
     }
-    else if (lBumper == false && resetEncoder == true)
+    else if (driveLBumper == false && resetEncoder == true)
     {
       resetEncoder = false;
     }*/
 
-    /*if (leftX == 0 && leftY == 0 && rightX == 0)
+    /*if (driveLeftX == 0 && driveLeftY == 0 && driveRightX == 0)
     {
       m_swerve.m_frontLeft.m_turningEncoder.SetPosition(flturnStay);
       m_swerve.m_frontRight.m_turningEncoder.SetPosition(frturnStay);
       m_swerve.m_backLeft.m_turningEncoder.SetPosition(blturnStay);
       m_swerve.m_backRight.m_turningEncoder.SetPosition(brturnStay);
-    }*/ //put something different in if statement
+    }*/
+    //put something different in if statement
 
-    auto xSpeed = /*strafe*/ m_xspeedLimiter.Calculate(leftX) * Drivetrain::kMaxSpeed;
+    auto xSpeed = /*strafe*/ m_xspeedLimiter.Calculate(driveLeftX) * Drivetrain::kMaxSpeed;
 
     frc::SmartDashboard::PutNumber("xSpeed", xSpeed.to<double>());
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
-    auto ySpeed = /*-forward*/ -m_yspeedLimiter.Calculate(leftY) * Drivetrain::kMaxSpeed;
+    auto ySpeed = /*-forward*/ -m_yspeedLimiter.Calculate(driveLeftY) * Drivetrain::kMaxSpeed;
     frc::SmartDashboard::PutNumber("ySpeed", ySpeed.to<double>());
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left
 
     frc::SmartDashboard::PutNumber("doubleGyro", m_swerve.doubleGyro());
 
-    /*if (rightX == 0)
+    /*if (driveRightX == 0)
     { //maybe works now
       const double kProt = 2.5; //6, 5 has a bit less flutter
       double currentRot = m_swerve.doubleGyro() + rotationCounter * 360;
@@ -243,15 +336,15 @@ private:
         rotError = -45;
       }
 
-      auto rotStay = m_rotLimiter.Calculate(/*(rotError / 180) * kProt rightX) * Drivetrain::kMaxAngularSpeed;
+      auto rotStay = m_rotLimiter.Calculate(/*(rotError / 180) * kProt driveRightX) * Drivetrain::kMaxAngularSpeed;
       m_swerve.Drive(xSpeed, ySpeed, rotStay, fieldRelative, false, 0, 0); //field relative = true
     }
     else
     {*/
-      auto rot = m_rotLimiter.Calculate(rightX) * Drivetrain::kMaxAngularSpeed;
-      m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0);  //field relative = true
+    auto rot = m_rotLimiter.Calculate(driveRightX) * Drivetrain::kMaxAngularSpeed;
+    m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
 
-      rotSetpoint = m_swerve.doubleGyro() /* + rotationCounter * 360*/; //maybe this should just be m_swerve.doubleGyro();
+    rotSetpoint = m_swerve.doubleGyro() /* + rotationCounter * 360*/; //maybe this should just be m_swerve.doubleGyro();
     //}
 
     //m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
@@ -270,16 +363,16 @@ private:
     // negative values when we push forward.
     /*double gyroDegrees = m_swerve.ahrs->GetYaw() * -1;
     float gyroRadians = gyroDegrees * (wpi::math::pi / 180);
-    float forward = leftY * cos(gyroRadians) + leftX * sin(gyroRadians);
-    float strafe = -leftY * sin(gyroRadians) + leftX * cos(gyroRadians);*/
+    float forward = driveLeftY * cos(gyroRadians) + driveLeftX * sin(gyroRadians);
+    float strafe = -driveLeftY * sin(gyroRadians) + driveLeftX * cos(gyroRadians);*/
 
-    auto xSpeed = /*strafem_xspeedLimiter.Calculate(leftX) * Drivetrain::kMaxSpeed;*/ cos(direction * wpi::math::pi / 180) * Drivetrain::kMaxSpeed;
+    auto xSpeed = /*strafem_xspeedLimiter.Calculate(driveLeftX) * Drivetrain::kMaxSpeed;*/ cos(direction * wpi::math::pi / 180) * Drivetrain::kMaxSpeed;
 
     //frc::SmartDashboard::PutNumber("xSpeed", xSpeed.to<double>());
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
-    auto ySpeed = /*-forward-m_yspeedLimiter.Calculate(leftY) * Drivetrain::kMaxSpeed*/ sin(direction * wpi::math::pi / 180) * Drivetrain::kMaxSpeed;
+    auto ySpeed = /*-forward-m_yspeedLimiter.Calculate(driveLeftY) * Drivetrain::kMaxSpeed*/ sin(direction * wpi::math::pi / 180) * Drivetrain::kMaxSpeed;
 
     //frc::SmartDashboard::PutNumber("ySpeed", ySpeed.to<double>());
     // Get the rate of angular rotation. We are inverting this because we want a
@@ -312,6 +405,16 @@ private:
     auto rot = m_rotLimiter.Calculate((rotError / 180) * kProt) * Drivetrain::kMaxAngularSpeed;
 
     m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, true, distance, maxVelocity); //field relative = true
+  }
+
+  void LimelightAim()
+  {
+    operatorBtnA = operatorController.GetRawButton(2);
+
+    /*if (operatorBtnA)
+    {
+      
+    }*/
   }
 
   void pauseAuto(double pauseTime)
@@ -380,11 +483,11 @@ private:
     else if (phase == 2)
     { //2 -> 3
       //pauseAuto(1);
-      DriveAutonomous(0, 60/*48*/, 3000, true);
+      DriveAutonomous(0, 60 /*48*/, 3000, true);
     }
     else if (phase == 3)
     { //3 -> 4
-      DriveAutonomous(-90, 60/*48*/, 3000, true);
+      DriveAutonomous(-90, 60 /*48*/, 3000, true);
     }
     else if (phase == 4)
     { //4 -> 5
@@ -392,31 +495,31 @@ private:
     }
     else if (phase == 5)
     { //5 -> 6
-      DriveAutonomous(90, 150/*138*/, 3000, true);
+      DriveAutonomous(90, 150 /*138*/, 3000, true);
     }
     else if (phase == 6)
     { //6 -> 7
-      DriveAutonomous(180, 60/*48*/, 3000, true);
+      DriveAutonomous(180, 60 /*48*/, 3000, true);
     }
     else if (phase == 7)
     { //7 -> 8
-      DriveAutonomous(-90, 60/*48*/, 3000, true);
+      DriveAutonomous(-90, 60 /*48*/, 3000, true);
     }
     else if (phase == 8)
     { //8 -> 9
-      DriveAutonomous(0, 120/*96*/, 3000, true);
+      DriveAutonomous(0, 120 /*96*/, 3000, true);
     }
     else if (phase == 9)
     { //9 -> 10
-      DriveAutonomous(90, 120/*108*/, 3000, true);
+      DriveAutonomous(90, 120 /*108*/, 3000, true);
     }
     else if (phase == 10)
     { //10 -> 11
-      DriveAutonomous(180, 60/*48*/, 3000, true);
+      DriveAutonomous(180, 60 /*48*/, 3000, true);
     }
     else if (phase == 11)
     { //11 -> 12
-      DriveAutonomous(-90, 312/*300*/, 3000, true);
+      DriveAutonomous(-90, 312 /*300*/, 3000, true);
       pauseTime = 5;
     }
     else if (phase == 12)
@@ -428,7 +531,7 @@ private:
   void bounceAuto()
   {
     if (phase == 1)
-    {  //1 -> 2
+    {                                    //1 -> 2
       DriveAutonomous(0, 30, 800, true); //double direction, double distance, double maxVelocity, bool fieldRelative
     }
     else if (phase == 2)
@@ -480,11 +583,12 @@ private:
   double fl_relativeEncoder;
   double fr_relativeEncoder;
   double bl_relativeEncoder;
-  double br_relativeEncoder; 
-  void resetTurnEncoder()
-{
+  double br_relativeEncoder;
 
-  frc::SmartDashboard::PutNumber("Front Left Encoder Value", fl_relativeEncoder);
+  void resetTurnEncoder()
+  {
+
+    frc::SmartDashboard::PutNumber("Front Left Encoder Value", fl_relativeEncoder);
     /*The following gets the gyro angle, compares it to where it is on the circle and then translates that to the
     encoder
     TODO: Wrong Math, need to implement the analog encoder in some way*/
@@ -493,61 +597,61 @@ private:
     /*STEP 1*/
     double gyroAngle = m_swerve.doubleGyro() + 180; //gets the heading from the Navx Board, 0 - 360
     /*STEP 2*/
-    double resetPosition = gyroAngle/180 * 9; //convert the angle to encoder clicks
+    double resetPosition = gyroAngle / 180 * 9; //convert the angle to encoder clicks
     /*STEP 3*/
     /*m_swerve.m_frontLeft.m_turningEncoder.SetPosition(resetPosition); //set all the new encoder positions
     m_swerve.m_frontRight.m_turningEncoder.SetPosition(resetPosition);
     m_swerve.m_backLeft.m_turningEncoder.SetPosition(resetPosition);
     m_swerve.m_backRight.m_turningEncoder.SetPosition(resetPosition);*/
-
+    /*STEP1 get distance to home which is 2.45*/
+    double distToHome = flAnalog.GetVoltage() - 2.45;
     if (flAnalog.GetVoltage() <= 2.45)
     {
-      fl_relativeEncoder = (-9/2.45) * flAnalog.GetVoltage();
+      fl_relativeEncoder = (-9 / 2.45) * flAnalog.GetVoltage();
     }
     else if (flAnalog.GetVoltage() > 2.45)
     {
-      fl_relativeEncoder = ((-9/2.45) *  flAnalog.GetVoltage()) + 18; //changed 360 to 18
+      fl_relativeEncoder = ((-9 / 2.45) * flAnalog.GetVoltage()) + 18; //changed 360 to 18
     }
 
     m_swerve.m_frontLeft.m_turningEncoder.SetPosition(fl_relativeEncoder);
 
     if (frAnalog.GetVoltage() <= 2.45)
     {
-      fr_relativeEncoder = (-9/2.45) * frAnalog.GetVoltage();
+      fr_relativeEncoder = (-9 / 2.45) * frAnalog.GetVoltage();
     }
     else if (frAnalog.GetVoltage() > 2.45)
     {
-      fr_relativeEncoder = ((-9/2.45) *  frAnalog.GetVoltage()) + 18; 
+      fr_relativeEncoder = ((-9 / 2.45) * frAnalog.GetVoltage()) + 18;
     }
 
     m_swerve.m_frontRight.m_turningEncoder.SetPosition(fr_relativeEncoder);
 
     if (blAnalog.GetVoltage() <= 2.45)
     {
-      bl_relativeEncoder = (-9/2.45) * blAnalog.GetVoltage();
+      bl_relativeEncoder = (-9 / 2.45) * blAnalog.GetVoltage();
     }
     else if (blAnalog.GetVoltage() > 2.45)
     {
-      bl_relativeEncoder = ((-9/2.45) *  blAnalog.GetVoltage()) + 18;
+      bl_relativeEncoder = ((-9 / 2.45) * blAnalog.GetVoltage()) + 18;
     }
 
     m_swerve.m_backLeft.m_turningEncoder.SetPosition(bl_relativeEncoder);
 
     if (brAnalog.GetVoltage() <= 2.45)
     {
-      br_relativeEncoder = (-9/2.45) * brAnalog.GetVoltage();
+      br_relativeEncoder = (-9 / 2.45) * brAnalog.GetVoltage();
     }
     else if (brAnalog.GetVoltage() > 2.45)
     {
-      br_relativeEncoder = ((-9/2.45) *  brAnalog.GetVoltage()) + 18;
+      br_relativeEncoder = ((-9 / 2.45) * brAnalog.GetVoltage()) + 18;
     }
 
     m_swerve.m_backRight.m_turningEncoder.SetPosition(br_relativeEncoder);
 
     std::cout << "encoder reset" << std::endl;
     frc::Wait(0.02);
-}
-
+  }
 };
 
 #ifndef RUNNING_FRC_TESTS
@@ -555,7 +659,5 @@ int main()
 {
   return frc::StartRobot<Robot>();
 }
-
-
 
 #endif

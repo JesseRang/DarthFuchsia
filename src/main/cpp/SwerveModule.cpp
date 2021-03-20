@@ -181,12 +181,12 @@ void SwerveModule::zeroDriveEncoder() {
     m_driveEncoder.SetPosition(0);
 }
 
-void SwerveModule::zeroTurnEncoder() {
+void SwerveModule::zeroTurnEncoder()
+{
     rev::CANAnalog m_analogSensor = m_turningMotor.GetAnalog(); //get the analog
     //home position of analog encoder is 2.45
     //get the difference between the home pos and the current pos on startup
     double dist_to_home = m_analogSensor.GetVoltage() - 2.45;
-    dist_to_home *= 
 
 }
 
