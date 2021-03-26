@@ -65,7 +65,7 @@ double PrintSetVelocity(const frc::SwerveModuleState &state)
   rev::CANPIDController m_turnPIDController = m_turningMotor.GetPIDController();
 
   void zeroDriveEncoder();
-  void zeroTurnEncoder();
+  void zeroTurnEncoder(const int turningMotorChannel);
   bool pauseModule(double time);
 
 private:

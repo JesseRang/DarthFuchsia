@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Intake.h"
+#include "LimeLight.h"
 #include <ctre/phoenix/motorcontrol/can/TalonFX.h>
 #include <ctre/Phoenix.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Servo.h>
+
 
 class Shooter
 {
@@ -15,11 +17,13 @@ private:
     ctre::phoenix::motorcontrol::can::TalonFX shooterMotorL{0};
     ctre::phoenix::motorcontrol::can::TalonFX shooterMotorR{1};
 
-    double shooterF = 0.0453;
-    double shooterP = 0.15;
+    double shooterF = 0.05;
+    double shooterP = 4;
     double shooterI = 0;
-    double shooterD = 1.5;
+    double shooterD = 1; 
     double wallP = 0.125;
+    double commandShooter = 0;
+    float hoodPosition = 0;
 
     // Operator Y
     bool trenchButtonPressed = false;
@@ -27,19 +31,17 @@ private:
     bool initButtonPressed = false;
     // Operator A
     bool wallButtonPressed = false;
+    //Operator B
+    bool testButtonPressed = false;
     // Driver A
     bool isLimelightActive = false;
     // Driver Right Trigger
     double isShooting = 0.00;
-    
 
-    double trenchSpeed = 6000;
+    double trenchSpeed = 5500; //6000
     double initSpeed = 5500;
-    double wallSpeed = 2700;
-    double limelightSpeed = 0;
-
-    double targetPositionY = 0;
-    bool limelightHasTarget = false;
+    double wallSpeed = 2700; //2700
+    double limelightSpeed = 5500;
 
     double flyWheelDesiredSpeed = 0;
 
@@ -50,11 +52,12 @@ private:
     Intake shooterConveyor;
 
 public:
+    LimeLight mLimeLight;
     // Run in Init
     void Initiate();
     // Run in Periodic
     void updateButtons();
-    void updateLimelight(double ty, bool limelightHasTarget);
+    void updateLimelight(double ty, double hasTarget);
 
     void Shoot();
 

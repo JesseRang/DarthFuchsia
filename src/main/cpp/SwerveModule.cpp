@@ -41,10 +41,9 @@ SwerveModule::SwerveModule(const int driveMotorChannel, const int turningMotorCh
 
     std::cout << "relative encoder: " << relativeEncoder << "  m_analog: " << m_analog.GetVoltage() << std::endl;
     
-    //m_turningEncoder.SetPosition(relativeEncoder);
     //double start_position = gyroStartAng + 180 / 180 * 9;
 
-    //m_turningEncoder.SetPosition(start_position);
+
 
     frc::Wait(.002);
 
@@ -108,7 +107,7 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
 
     // Set the motor outputs.
     if (!autonomous) {
-        m_drivePIDController.SetReference(stateSpeed * speedFlip * 435, rev::ControlType::kVelocity); //*3000
+        //m_drivePIDController.SetReference(stateSpeed * speedFlip * 435, rev::ControlType::kVelocity); //*3000
         //std::cout << "speed reference" <<stateSpeed * speedFlip * 435 << std::endl;
     } else {
         //kMaxVel = maxVelocity;
@@ -133,7 +132,7 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
     } 
     
 
-    if (abs(current - command) >= 4.5 && flipping == 0) {    //changed the inequality signs to <,> from =<,=>
+   /* if (abs(current - command) >= 4.5 && flipping == 0) {    //changed the inequality signs to <,> from =<,=>
             m_turningEncoder.SetPosition(current + 9);
             speedFlip *= -1;
             flipping = 1;
@@ -141,7 +140,7 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
     } else if (abs(current - command) < 4.5 && flipping == 1) {
         flipping = 0;
       //std::cout << "flipped  " << "flipping: " << flipping << std::endl;
-    }
+    }*/ //got rid of speed flip to see if motors would stop losing clicks
 
     frc::SmartDashboard::PutNumber("Drive P", dkP);
     //frc::SmartDashboard::PutNumber("Drive I", dkI);
@@ -181,12 +180,32 @@ void SwerveModule::zeroDriveEncoder() {
     m_driveEncoder.SetPosition(0);
 }
 
-void SwerveModule::zeroTurnEncoder()
+void SwerveModule::zeroTurnEncoder(const int turningMotorChannel)
 {
-    rev::CANAnalog m_analogSensor = m_turningMotor.GetAnalog(); //get the analog
-    //home position of analog encoder is 2.45
-    //get the difference between the home pos and the current pos on startup
-    double dist_to_home = m_analogSensor.GetVoltage() - 2.45;
+    /*if (m_analog.GetVoltage() <= 2.45) 
+      relativeEncoder = (-9/2.45) * m_analog.GetVoltage();
+    else if(m_analog.GetVoltage() > 2.45) 
+      relativeEncoder = (-9/2.45) * m_analog.GetVoltage() + 18;*/
+    frc::AnalogInput m_analog{turningMotorChannel/2 -1};//
+    double current = m_turningEncoder.GetPosition();
 
+    //home position of analog encoder is 2.45
+    double current_position = m_analog.GetVoltage();
+    //get the difference between the home pos and the current pos on startup
+    double dist_to_home = current_position - 2.45;
+    //convert the distance to home to relative values
+    dist_to_home = dist_to_home * (-9/2.45);
+    //current_position = current * (-9/2.45);
+    //set turn encoders to difference plus the current position
+    double distance_digital = (current_position * 3.6734) - /*(2.45 * 3.6734)*/9;
+
+    m_turningEncoder.SetPosition(distance_digital);
+
+    frc::SmartDashboard::PutNumber("current_position", current_position);
+    frc::SmartDashboard::PutNumber("distance_digital", distance_digital);
+
+    frc::Wait(0.02);
+    //m_turningEncoder.SetPosition(current_position - dist_to_home);
+    
 }
 

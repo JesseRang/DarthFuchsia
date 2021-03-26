@@ -12,26 +12,19 @@
 #include <frc/Talon.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
 #include <ctre/Phoenix.h>
-
-#include <networktables/NetworkTable.h>
-#include <networktables/NetworkTableInstance.h>
-
 #include <frc/Drive/RobotDriveBase.h>
-
 #include <frc/Joystick.h>
-
 #include "Drivetrain.h"
 #include "Intake.h"
 #include "Shooter.h"
+#include "LimeLight.h"
 
 WPI_TalonFX IntakeMotor{0};
 
-frc::DigitalInput breakBeamNewBall{6}; //right after the V
-frc::DigitalInput breakBeamIndex{7}; //near the indexer wheel below the conveyor
+frc::DigitalInput breakBeamNewBall{6};       //right after the V
+frc::DigitalInput breakBeamIndex{7};         //near the indexer wheel below the conveyor
 frc::DigitalInput breakBeamConveyorStart{8}; //at the start of the conveyor
-frc::DigitalInput breakBeamFull{9}; //at the top of the conveyor
-
-
+frc::DigitalInput breakBeamFull{9};          //at the top of the conveyor
 
 frc::Timer timer;
 frc::Timer arrivedTimer;
@@ -41,10 +34,6 @@ frc::AnalogInput frAnalog{0};
 frc::AnalogInput flAnalog{1};
 
 frc::DoubleSolenoid intakeSolenoid{2, 3};
-
-std::shared_ptr<NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
-double ty = table->GetNumber("ty", 0.0);
-double tv = table->GetNumber("tv", 0.0);
 
 class Robot : public frc::TimedRobot
 {
@@ -115,12 +104,13 @@ public:
     driveShooter.Initiate();
     driveIntake.Initiate();
     m_swerve.ahrs->ZeroYaw();
-    m_swerve.m_frontLeft.zeroTurnEncoder();
-    m_swerve.m_frontRight.zeroTurnEncoder();
-    m_swerve.m_backLeft.zeroTurnEncoder();
-    m_swerve.m_backRight.zeroTurnEncoder();
+    /*m_swerve.m_frontLeft.zeroTurnEncoder(4);
+    m_swerve.m_frontRight.zeroTurnEncoder(2);
+    m_swerve.m_backLeft.zeroTurnEncoder(6);
+    m_swerve.m_backRight.zeroTurnEncoder(8);*/
+
     /*Setting the encoders to mathc the position of the Gyro*/
-    //resetTurnEncoder();
+    resetTurnEncoder();
   }
 
   int first_loop = 0;
@@ -138,38 +128,39 @@ public:
 
   void TeleopPeriodic() override
   {
+    driveShooter.mLimeLight.tx = driveShooter.mLimeLight.table->GetNumber("tx", 0.0);
+    driveShooter.mLimeLight.ty = driveShooter.mLimeLight.table->GetNumber("ty", 0.0);
+    driveShooter.mLimeLight.ta = driveShooter.mLimeLight.table->GetNumber("ta", 0.0);
+    driveShooter.mLimeLight.tv = driveShooter.mLimeLight.table->GetNumber("tv", 0.0);
+
+    //std::cout <<"tv " << driveShooter.mLimeLight.tv << std::endl;
+
     driveRTrigger = driverController.GetRawAxis(3); //added on 3/19 to program shooter to trigger
-    bool limelightHasTarget = false;
-    if (tv < 1.0)
-    {
-      limelightHasTarget = false;
-    }
-    else
-    {
-      limelightHasTarget = true;
-    }
+    double limelightHasTarget = driveShooter.mLimeLight.table->GetNumber("tv", 0.0);
 
+    driveShooter.printPIDFValues();
+    driveShooter.setPIDFValues(false);
 
-    driveShooter.updateLimelight(ty, limelightHasTarget);
+    driveShooter.updateLimelight(driveShooter.mLimeLight.ty, limelightHasTarget);
     driveShooter.updateButtons();
     driveIntake.updateBreakBeams(breakBeamNewBall.Get(), breakBeamIndex.Get(), breakBeamConveyorStart.Get(), breakBeamFull.Get());
     driveIntake.updateButtons();
     isTogglingIntake = driveIntake.driverController.GetRawButton(1);
 
-        //make a button to reset encoder values
-    //DriveWithJoystick(false); //true = field relative, false = not field relative
+    //make a button to reset encoder values
+    DriveWithJoystick(false); //true = field relative, false = not field relative
     frc::SmartDashboard::PutNumber("fr encoder", frAnalog.GetVoltage());
     frc::SmartDashboard::PutNumber("fl encoder", flAnalog.GetVoltage());
     frc::SmartDashboard::PutNumber("bl encoder", blAnalog.GetVoltage());
     frc::SmartDashboard::PutNumber("br encoder", brAnalog.GetVoltage());
 
-    driveIntake.Run();
+    //driveIntake.Run(); //commented out temporarily to test swerve
 
-    std::cout << "index beam" << breakBeamIndex.Get() << std::endl;
+    //std::cout << "index beam" << breakBeamIndex.Get() << std::endl;
     //std::cout << "New Ball Sensor " << breakBeamConveyorStart.Get() << std::endl;
     //std::cout << "Intake Full Sensor " << breakBeamFull.Get() << std::endl;
-      
-    if (isTogglingIntake)
+
+    /*if (isTogglingIntake) //commented out temporarily to test swerve
     {
       if (solenoidUp && firstTogglePress)
       {
@@ -187,17 +178,12 @@ public:
     else
     {
       firstTogglePress = true;
-    }
+    }*/
+    frc::SmartDashboard::PutNumber("fl motor encoder", m_swerve.m_frontLeft.m_turningEncoder.GetPosition());
+    frc::SmartDashboard::PutNumber("fr motor encoder", m_swerve.m_frontRight.m_turningEncoder.GetPosition());
+    frc::SmartDashboard::PutNumber("bl motor encoder", m_swerve.m_backLeft.m_turningEncoder.GetPosition());
+    frc::SmartDashboard::PutNumber("br motor encoder", m_swerve.m_backRight.m_turningEncoder.GetPosition());
 
-    hoodForwardBtn = driverController.GetRawButton(4);
-    hoodBackBtn = driverController.GetRawButton(3);
-
-    /*if (hoodForwardBtn)
-      position = 1;
-    else if (hoodBackBtn)
-      position = -1;*/
-
-    //driveShooter.setHoodPosition(position);
     driveShooter.Shoot();
   }
 
@@ -342,12 +328,12 @@ private:
     else
     {*/
     auto rot = m_rotLimiter.Calculate(driveRightX) * Drivetrain::kMaxAngularSpeed;
-    m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
+    //m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
 
     rotSetpoint = m_swerve.doubleGyro() /* + rotationCounter * 360*/; //maybe this should just be m_swerve.doubleGyro();
     //}
 
-    //m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
+    m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
     gyroOld = m_swerve.doubleGyro();
 
     frc::SmartDashboard::PutNumber("fl motor encoder", m_swerve.m_frontLeft.m_turningEncoder.GetPosition());
@@ -587,7 +573,11 @@ private:
 
   void resetTurnEncoder()
   {
-
+    m_swerve.m_frontLeft.m_turningMotor.Disable();
+    m_swerve.m_frontRight.m_turningMotor.Disable();
+    m_swerve.m_backLeft.m_turningMotor.Disable();
+    m_swerve.m_backRight.m_turningMotor.Disable();
+  
     frc::SmartDashboard::PutNumber("Front Left Encoder Value", fl_relativeEncoder);
     /*The following gets the gyro angle, compares it to where it is on the circle and then translates that to the
     encoder
@@ -650,7 +640,7 @@ private:
     m_swerve.m_backRight.m_turningEncoder.SetPosition(br_relativeEncoder);
 
     std::cout << "encoder reset" << std::endl;
-    frc::Wait(0.02);
+    frc::Wait(0.2);
   }
 };
 

@@ -145,7 +145,7 @@ void Intake::intakeLogic()
     else if (!intakeFull && conveyorStart)
     {
         indexMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 1);
-        conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 1);
+        conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.5); //1
     }
     else
     {

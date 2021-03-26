@@ -1,10 +1,8 @@
 #include "Shooter.h"
+#include "Robot.h"
 #include <ctre/phoenix/motorcontrol/can/TalonFX.h>
 #include <ctre/Phoenix.h>
 #include <frc/smartdashboard/SmartDashboard.h>
-#include <networktables/NetworkTable.h>
-#include <networktables/NetworkTableInstance.h>
-
 void Shooter::Initiate()
 {
     shooterMotorR.Follow(shooterMotorL);
@@ -19,6 +17,9 @@ void Shooter::Initiate()
     shooterMotorL.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
     shooterMotorR.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
 
+    shooterMotorL.ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 50, 0.01));
+    shooterMotorR.ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 50, 0.01));
+
     setPIDFValues(false);
 }
 
@@ -28,16 +29,17 @@ void Shooter::updateButtons()
     trenchButtonPressed = operatorController.GetRawButton(4);
     initButtonPressed = operatorController.GetRawButton(3);
     wallButtonPressed = operatorController.GetRawButton(1);
+    testButtonPressed = operatorController.GetRawButton(2);
 
     isShooting = driverController.GetRawAxis(3);
 
-    isLimelightActive = driverController.GetRawButton(2);
+    isLimelightActive = driverController.GetRawButton(1);
 }
 
-void Shooter::updateLimelight(double ty, bool hasTarget)
+void Shooter::updateLimelight(double ty, double hasTarget)
 {
-    targetPositionY = ty;
-    limelightHasTarget = hasTarget;
+    mLimeLight.targetPositionY = ty;
+    mLimeLight.limelightHasTarget = hasTarget;
 }
 
 void Shooter::Shoot()
@@ -47,12 +49,26 @@ void Shooter::Shoot()
         getShooterSpeeds();
         activateConveyor();
     }
-    modifyWheelVelocity();
+
+    if(trenchButtonPressed || initButtonPressed || wallButtonPressed)
+    {
+        modifyWheelVelocity();
+    }
+    else if (isLimelightActive)
+    {
+        setLimelightSpeed();
+    }
+    else
+    {
+      shooterMotorL.Set(TalonFXControlMode::PercentOutput, 0);
+    }
+    
+    
 }
 
 void Shooter::printShooterSpeeds()
 {
-    frc::SmartDashboard::PutNumber("Trench Speed", 6000);
+    frc::SmartDashboard::PutNumber("Trench Speed", 5500); //6000
     frc::SmartDashboard::PutNumber("Init Speed", 5500);
     frc::SmartDashboard::PutNumber("Wall Speed", 2700);
     frc::SmartDashboard::PutNumber("limelightSpeed", limelightSpeed);
@@ -60,7 +76,7 @@ void Shooter::printShooterSpeeds()
 
 void Shooter::getShooterSpeeds()
 {
-    trenchSpeed = frc::SmartDashboard::GetNumber("Trench Speed", 6000);
+    trenchSpeed = frc::SmartDashboard::GetNumber("Trench Speed", 5500);
     initSpeed = frc::SmartDashboard::GetNumber("Init Speed", 5500);
     wallSpeed = frc::SmartDashboard::GetNumber("Wall Speed", 2700);
 
@@ -69,19 +85,21 @@ void Shooter::getShooterSpeeds()
 
 void Shooter::printPIDFValues()
 {
-    frc::SmartDashboard::PutNumber("ShooterF", 0.047);
-    frc::SmartDashboard::PutNumber("ShooterP", 0.125);
-    frc::SmartDashboard::PutNumber("ShooterI", 0);
-    frc::SmartDashboard::PutNumber("ShooterD", 1.5);
-    frc::SmartDashboard::PutNumber("WallP", 0.125);
+    frc::SmartDashboard::PutNumber("ShooterF", shooterF);
+    frc::SmartDashboard::PutNumber("ShooterP", shooterP);
+    frc::SmartDashboard::PutNumber("ShooterI", shooterI);
+    frc::SmartDashboard::PutNumber("ShooterD", shooterD);
+    frc::SmartDashboard::PutNumber("WallP", wallP);
 
     frc::SmartDashboard::PutNumber("ShooterVelocity", shooterMotorL.GetSelectedSensorVelocity() / 3.4133);
+    frc::SmartDashboard::PutNumber("Command Velocity", commandShooter); //added to adjust desired velocity from smart dashboard
+    frc::SmartDashboard::PutNumber("Hood Position", hoodPosition); //added to adjust hood angle from smart dashboard
 }
 
 void Shooter::getPIDFValues()
 {
     shooterF = frc::SmartDashboard::GetNumber("ShooterF", 0.047);
-    shooterP = frc::SmartDashboard::GetNumber("ShooterP", 0.125);
+    shooterP = frc::SmartDashboard::GetNumber("ShooterP", shooterP);
     shooterI = frc::SmartDashboard::GetNumber("ShooterI", 0);
     shooterD = frc::SmartDashboard::GetNumber("ShooterD", 1.5);
     wallP = frc::SmartDashboard::GetNumber("WallP", 0);
@@ -93,51 +111,84 @@ void Shooter::setPIDFValues(bool isWallShot)
     shooterMotorL.Config_kI(0, shooterI, timeoutMS);
     shooterMotorL.Config_kD(0, shooterD, timeoutMS);
 
-    if (isWallShot)
-        shooterMotorL.Config_kP(0, wallP, timeoutMS);
+    shooterP = frc::SmartDashboard::GetNumber("ShooterP", shooterP);
+    shooterMotorL.Config_kP(0, shooterP, timeoutMS);
+
+    /*if (isWallShot)
+        //shooterMotorL.Config_kP(0, wallP, timeoutMS); //commented out to adjust pid from smart dashboard
+        if (wallP != frc::SmartDashboard::GetNumber("WallP", 0))
+        {
+            wallP = frc::SmartDashboard::GetNumber("WallP", 0);
+            shooterMotorL.Config_kP(0, wallP, timeoutMS);
+        }
     else
-        shooterMotorL.Config_kP(0, shooterP, timeoutMS);
+    {
+        if (shooterP != frc::SmartDashboard::GetNumber("ShooterP", shooterP))
+        {
+            shooterP = frc::SmartDashboard::GetNumber("ShooterP", shooterP);
+            shooterMotorL.Config_kP(0, shooterP, timeoutMS);
+        }
+    }*/
+        
+    if (shooterI != frc::SmartDashboard::GetNumber("ShooterI", 0))
+    {
+        shooterI = frc::SmartDashboard::GetNumber("ShooterI", 0);
+        shooterMotorL.Config_kI(0, shooterI, timeoutMS);
+    }
+
+    if (shooterD != frc::SmartDashboard::GetNumber("ShooterD", 1.5))
+    {
+        shooterD = frc::SmartDashboard::GetNumber("ShooterD", 1.5);
+        shooterMotorL.Config_kD(0, shooterD, timeoutMS);
+    }
+
+    if (shooterF != frc::SmartDashboard::GetNumber("ShooterF", 0.047))
+    {
+        shooterF = frc::SmartDashboard::GetNumber("ShooterF", 0.047);
+        shooterMotorL.Config_kF(0, shooterF, timeoutMS);
+    }
+
+    if (hoodPosition != frc::SmartDashboard::GetNumber("Hood Postion", hoodPosition))
+    {
+        hoodPosition = frc::SmartDashboard::GetNumber("Hood Position", hoodPosition);
+        setHoodPosition(frc::SmartDashboard::GetNumber("Hood Position", hoodPosition));
+    }
+
+    if (flyWheelDesiredSpeed != frc::SmartDashboard::GetNumber("CommandVelocity", commandShooter))
+    {
+        flyWheelDesiredSpeed = frc::SmartDashboard::GetNumber("CommandVelocity", commandShooter);
+    }
 }
 
 void Shooter::setLimelightSpeed()
 {
-    if (isLimelightActive && limelightHasTarget)
+    double modValue = 3.4133;
+
+    if (isLimelightActive)
     {
-        if (targetPositionY > 0)
-            limelightSpeed = 0;
-
-        else if (targetPositionY < 0 && targetPositionY >= -0.49)
-            limelightSpeed = 6300;
-
-        else if (targetPositionY < -0.49 && targetPositionY >= -6.17)
-            limelightSpeed = 5500;
-
-        else if (targetPositionY < -6.17 && targetPositionY >= -7.87)
-            limelightSpeed = 5400;
-
-        else if (targetPositionY < -7.17 && targetPositionY >= -8.86)
-            limelightSpeed = 5500;
-
-        else if (targetPositionY < -8.86 && targetPositionY >= -13.55)
-            limelightSpeed = 5600;
-
-        else if (targetPositionY < -13.55 && targetPositionY >= -14.28)
-            limelightSpeed = 5900;
-
-        else if (targetPositionY < -14.28 && targetPositionY >= 15)
-            limelightSpeed = 6300;
-
-        else
-            limelightSpeed = 0;
+        //std::cout << "limlightActive" << std::endl;
+        mLimeLight.ledMode = 3;
+        if (mLimeLight.limelightHasTarget)
+        {
+            flyWheelDesiredSpeed = limelightSpeed * modValue;
+            setHoodPosition(0.0181 * mLimeLight.ty - 0.548);
+            shooterMotorL.Set(TalonFXControlMode::Velocity, flyWheelDesiredSpeed);
+        }
     }
+    else
+    {
+        shooterMotorL.Set(TalonFXControlMode::PercentOutput, 0);
+    }
+    
+    //std::cout << "limelight hood " << 0.0181 * mLimeLight.ty - 0.548 << std::endl;
 }
 
 void Shooter::activateConveyor()
 {
-    shooterConveyor.indexMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.7);
+    shooterConveyor.indexMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.5); //used to be 0.7
     if (trenchButtonPressed)
     {
-        shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 1);
+        shooterConveyor.conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.5); //used to be 1
     }
     else if (initButtonPressed)
     {
@@ -154,11 +205,12 @@ void Shooter::activateConveyor()
 void Shooter::modifyWheelVelocity()
 {
     double modValue = 3.4133;
-    float trenchHoodPosition = -1;
-    float initHoodPosition = 0;
+    float trenchHoodPosition = -0.3; //changed from -1
+    float initHoodPosition = 0.7; //changed from 0
     float wallHoodPosition = 1;
     float limelightHoodPosition = 0; //pass in something for this value once shooter testing is figured out
     float defaultHoodPosition = 0;
+    //float getHoodPosition = hoodServo.GetSpeed();
 
     if (trenchButtonPressed)
     {
@@ -180,6 +232,11 @@ void Shooter::modifyWheelVelocity()
         flyWheelDesiredSpeed = limelightSpeed * modValue;
         setHoodPosition(limelightHoodPosition);
     }
+    else if (testButtonPressed)
+    {
+        flyWheelDesiredSpeed = frc::SmartDashboard::GetNumber("CommandVelocity", commandShooter);
+        setHoodPosition(frc::SmartDashboard::GetNumber("Hood Position", hoodPosition));
+    }
     else
     {
         flyWheelDesiredSpeed = 0;
@@ -190,6 +247,11 @@ void Shooter::modifyWheelVelocity()
         shooterMotorL.Set(TalonFXControlMode::PercentOutput, 0);
     else 
         shooterMotorL.Set(TalonFXControlMode::Velocity, flyWheelDesiredSpeed);
+
+    /*if (getHoodPosition != frc::SmartDashboard::GetNumber("hood position", 0))
+    {
+        setHoodPosition(frc::SmartDashboard::GetNumber("hood position", 0));
+    }*/
 }
 
 void Shooter::setHoodPosition(float position)

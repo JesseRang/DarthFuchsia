@@ -43,7 +43,6 @@ private:
     float vMotorDefault = 0.7;
 
 public:
-
     frc::Joystick driverController{0};
     frc::Joystick operatorController{1};
 
