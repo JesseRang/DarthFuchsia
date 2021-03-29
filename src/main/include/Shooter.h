@@ -14,13 +14,13 @@ private:
     frc::Joystick driverController{0};
     frc::Joystick operatorController{1};
 
-    ctre::phoenix::motorcontrol::can::TalonFX shooterMotorL{0};
-    ctre::phoenix::motorcontrol::can::TalonFX shooterMotorR{1};
+    ctre::phoenix::motorcontrol::can::TalonFX shooterMotorL{1}; //can id should be 0
+    ctre::phoenix::motorcontrol::can::TalonFX shooterMotorR{0}; //can id should be 1
 
     double shooterF = 0.05;
-    double shooterP = 4;
+    double shooterP = 4; //changed from 2 to original value of 4
     double shooterI = 0;
-    double shooterD = 1; 
+    double shooterD = 1; //changed from 0.5 to original value of 1
     double wallP = 0.125;
     double commandShooter = 0;
     float hoodPosition = 0;

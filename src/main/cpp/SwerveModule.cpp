@@ -24,7 +24,7 @@ const double MaxRPM = 5700;
 
 SwerveModule::SwerveModule(const int driveMotorChannel, const int turningMotorChannel, double gyroStartAng) : m_driveMotor{driveMotorChannel, brushless}, m_turningMotor{turningMotorChannel, brushless}
 {
-    frc::AnalogInput m_analog{turningMotorChannel/2 -1};
+    //frc::AnalogInput m_analog{turningMotorChannel/2 -1};
 
     m_turningMotor.RestoreFactoryDefaults();
     m_driveMotor.RestoreFactoryDefaults();
@@ -34,12 +34,12 @@ SwerveModule::SwerveModule(const int driveMotorChannel, const int turningMotorCh
 
     //m_turnPIDController.SetFeedbackDevice(m_turningMotor.GetAnalog());
     
-    if (m_analog.GetVoltage() <= 2.45) 
+    /*if (m_analog.GetVoltage() <= 2.45) 
       relativeEncoder = (-9/2.45) * m_analog.GetVoltage();
     else if(m_analog.GetVoltage() > 2.45) 
       relativeEncoder = (-9/2.45) * m_analog.GetVoltage() + 18;
 
-    std::cout << "relative encoder: " << relativeEncoder << "  m_analog: " << m_analog.GetVoltage() << std::endl;
+    std::cout << "relative encoder: " << relativeEncoder << "  m_analog: " << m_analog.GetVoltage() << std::endl;*/
     
     //double start_position = gyroStartAng + 180 / 180 * 9;
 
@@ -68,11 +68,11 @@ SwerveModule::SwerveModule(const int driveMotorChannel, const int turningMotorCh
     frc::SmartDashboard::PutNumber("Turn kIz", kIz);
     frc::SmartDashboard::PutNumber("Turn kFF", kFF);*/
 
-    m_turnPIDController.SetP(frc::SmartDashboard::GetNumber("Turn P", kP));
-    m_turnPIDController.SetI(frc::SmartDashboard::GetNumber("Turn I", kI));
-    m_turnPIDController.SetD(frc::SmartDashboard::GetNumber("Turn D", 0));
-    m_turnPIDController.SetIZone(frc::SmartDashboard::GetNumber("Turn kIz", kIz));
-    m_turnPIDController.SetFF(frc::SmartDashboard::GetNumber("Turn kFF", 0));
+    m_turnPIDController.SetP(kP);
+    m_turnPIDController.SetI(kI);
+    m_turnPIDController.SetD(0);
+    m_turnPIDController.SetIZone(kIz);
+    m_turnPIDController.SetFF(0);
     m_turnPIDController.SetOutputRange(-9, 9); //used to be -pi and pi
 
     m_drivePIDController.SetSmartMotionMaxVelocity(kMaxVel);
@@ -107,7 +107,7 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
 
     // Set the motor outputs.
     if (!autonomous) {
-        //m_drivePIDController.SetReference(stateSpeed * speedFlip * 435, rev::ControlType::kVelocity); //*3000
+        m_drivePIDController.SetReference(stateSpeed * speedFlip * 435, rev::ControlType::kVelocity); //*435
         //std::cout << "speed reference" <<stateSpeed * speedFlip * 435 << std::endl;
     } else {
         //kMaxVel = maxVelocity;
@@ -116,10 +116,10 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
         m_error = m_driveEncoder.GetPosition() - distance * 8.333333333/(wpi::math::pi * 4) / 1.075 *speedFlip;
     }
     
-    frc::SmartDashboard::PutNumber("Drive Speed", state.speed.to<double>() * 500);
+    //frc::SmartDashboard::PutNumber("Drive Speed", state.speed.to<double>() * 500);
 
     //this plus speed flip causes the robot to spin non stop
-    frc::SmartDashboard::PutNumber("Current - Command", current - command);
+    //frc::SmartDashboard::PutNumber("Current - Command", current - command);
     if (((current - command) >= 9)) 
     {
         while((current - command) >= 9) {
@@ -129,7 +129,7 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
          while((current - command) < -9) {
              command -= 18;
          }
-    } 
+    }
     
 
    /* if (abs(current - command) >= 4.5 && flipping == 0) {    //changed the inequality signs to <,> from =<,=>
@@ -142,27 +142,27 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
       //std::cout << "flipped  " << "flipping: " << flipping << std::endl;
     }*/ //got rid of speed flip to see if motors would stop losing clicks
 
-    frc::SmartDashboard::PutNumber("Drive P", dkP);
+    //frc::SmartDashboard::PutNumber("Drive P", dkP);
     //frc::SmartDashboard::PutNumber("Drive I", dkI);
-    frc::SmartDashboard::PutNumber("Drive D", dkD);
+    //frc::SmartDashboard::PutNumber("Drive D", dkD);
 
-    if (dkP != frc::SmartDashboard::GetNumber("Drive P", dkP)) {
+    /*if (dkP != frc::SmartDashboard::GetNumber("Drive P", dkP)) {
         dkP = frc::SmartDashboard::GetNumber("Drive P", dkP);
     }
 
     if (dkD != frc::SmartDashboard::GetNumber("Drive D", dkD)) {
         dkD = frc::SmartDashboard::GetNumber("Drive D", dkD);
-    }
+    }*/
 
-    frc::SmartDashboard::PutNumber("encoder command", m_turningEncoder.GetPosition());
-    frc::SmartDashboard::PutNumber("speed flip", speedFlip);
+    //frc::SmartDashboard::PutNumber("encoder command", m_turningEncoder.GetPosition());
+    //frc::SmartDashboard::PutNumber("speed flip", speedFlip);
     
     m_turnPIDController.SetReference(command, rev::ControlType::kPosition);
     //this->lastCommand = command - (18*(lastCommand/abs(lastCommand)));
-    frc::SmartDashboard::PutNumber("Encoder Position", m_turningEncoder.GetPosition() * 9);
-    frc::SmartDashboard::PutNumber("Turn Set Reference", (doubleangle / wpi::math::pi) * 9);
-    frc::SmartDashboard::PutNumber("Rotate Speed", doubleangle);
-    frc::SmartDashboard::PutNumber("command", command);
+    //frc::SmartDashboard::PutNumber("Encoder Position", m_turningEncoder.GetPosition() * 9);
+    //frc::SmartDashboard::PutNumber("Turn Set Reference", (doubleangle / wpi::math::pi) * 9);
+    //frc::SmartDashboard::PutNumber("Rotate Speed", doubleangle);
+    //frc::SmartDashboard::PutNumber("command", command);
 
     //std::cout << "error: " << m_error << std::endl;
 
@@ -182,29 +182,25 @@ void SwerveModule::zeroDriveEncoder() {
 
 void SwerveModule::zeroTurnEncoder(const int turningMotorChannel)
 {
-    /*if (m_analog.GetVoltage() <= 2.45) 
-      relativeEncoder = (-9/2.45) * m_analog.GetVoltage();
-    else if(m_analog.GetVoltage() > 2.45) 
-      relativeEncoder = (-9/2.45) * m_analog.GetVoltage() + 18;*/
-    frc::AnalogInput m_analog{turningMotorChannel/2 -1};//
+    //frc::AnalogInput m_analog{turningMotorChannel/2 -1};//
     double current = m_turningEncoder.GetPosition();
 
     //home position of analog encoder is 2.45
-    double current_position = m_analog.GetVoltage();
+    //double current_position = m_analog.GetVoltage();
     //get the difference between the home pos and the current pos on startup
-    double dist_to_home = current_position - 2.45;
+    //double dist_to_home = current_position - 2.45;
     //convert the distance to home to relative values
-    dist_to_home = dist_to_home * (-9/2.45);
+    //dist_to_home = dist_to_home * (-9/2.45);
     //current_position = current * (-9/2.45);
     //set turn encoders to difference plus the current position
-    double distance_digital = (current_position * 3.6734) - /*(2.45 * 3.6734)*/9;
+    //double distance_digital = (current_position * 3.6734) - /*(2.45 * 3.6734)*/9;
 
-    m_turningEncoder.SetPosition(distance_digital);
+    //m_turningEncoder.SetPosition(distance_digital);
 
-    frc::SmartDashboard::PutNumber("current_position", current_position);
-    frc::SmartDashboard::PutNumber("distance_digital", distance_digital);
+    //frc::SmartDashboard::PutNumber("current_position", current_position);
+    //frc::SmartDashboard::PutNumber("distance_digital", distance_digital);
 
-    frc::Wait(0.02);
+    //frc::Wait(0.02);
     //m_turningEncoder.SetPosition(current_position - dist_to_home);
     
 }

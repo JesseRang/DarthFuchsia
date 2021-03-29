@@ -13,8 +13,11 @@ public:
     double ta = table->GetNumber("ta", 0.0);
     double tv = table->GetNumber("tv", 0.0);
 
+    double txavg = 0;
+    double limelightIntegral = 0;
     double targetPositionY = 0;
     double limelightHasTarget = table->GetNumber("tv", 0.0);
+    double limelightTurnCmd = 0;
     int ledMode = table->PutNumber("ledMode", ledMode);
 
 };

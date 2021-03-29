@@ -33,34 +33,7 @@ void Intake::updateButtons()
     isCycling = driverController.GetRawButton(5);
     isPurging = operatorController.GetRawAxis(2);
     isReversingV = operatorController.GetRawButton(8);
-    isTogglingIntake = driverController.GetRawButton(1);
-}
-
-void Intake::toggleIntakePosition()
-{
-    /*
-    if (isTogglingIntake)
-    {
-        //intakeSolenoid.Toggle();
-        /*  if (solenoidUp && firstTogglePress)
-        {
-            intakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
-            solenoidUp = false;
-            std::printf("Lowering Solenoid\n");
-        }
-        else if (!solenoidUp && firstTogglePress)
-        {
-            std::printf("Raising Solenoid\n");
-            intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
-            solenoidUp = true;
-        }
-        firstTogglePress = false;
-    }
-    else
-    {
-        std::printf("reset");
-        firstTogglePress = true;
-    } */
+    isTogglingIntake = operatorController.GetRawButton(6);
 }
 
 void Intake::Run()
@@ -80,7 +53,7 @@ void Intake::Run()
 
 void Intake::intake()
 {
-    intakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.6);
+    intakeMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 1);
     intakeLogic();
 }
 void Intake::cycleBalls()
@@ -145,7 +118,7 @@ void Intake::intakeLogic()
     else if (!intakeFull && conveyorStart)
     {
         indexMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 1);
-        conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 0.5); //1
+        conveyorMotor.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, 1); //0.8
     }
     else
     {

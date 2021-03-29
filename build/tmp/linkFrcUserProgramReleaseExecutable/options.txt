@@ -1,9 +1,10 @@
 -o
 "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\build\\exe\\frcUserProgram\\release\\frcUserProgram"
+"C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\build\\objs\\frcUserProgram\\release\\frcUserProgramCpp\\1q3nmz23eyq7mv8szac7tikov\\Intake.o"
 "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\build\\objs\\frcUserProgram\\release\\frcUserProgramCpp\\2bzeyvkc5skz4t5n9zkco7x7s\\SwerveModule.o"
+"C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\build\\objs\\frcUserProgram\\release\\frcUserProgramCpp\\35d6vxaw7ingp8ta1lgqizvyz\\Shooter.o"
 "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\build\\objs\\frcUserProgram\\release\\frcUserProgramCpp\\3bg5a77l7vd4edmrxq5jco6ri\\Robot.o"
 "C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\build\\objs\\frcUserProgram\\release\\frcUserProgramCpp\\bv8allmn53jp7hrwetrf7id8i\\Drivetrain.o"
-"C:\\Users\\FRC Programmers\\Desktop\\FRC Programs\\SwerveMainTestWithGyro\\build\\objs\\frcUserProgram\\release\\frcUserProgramCpp\\etwu9iy4c3htuu41mog050bx2\\Gyro.o"
 "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\17bdd1189782772e628b6c18c2b19e0b\\navx-cpp-4.0.412-linuxathenastatic\\linux\\athena\\static\\libnavx_frc.a"
 "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\bc2bee732bbe156d65df27f3f2768be0\\wpiapi-cpp-5.19.4-linuxathenastatic\\linux\\athena\\static\\libCTRE_Phoenix_WPI.a"
 "C:\\Users\\FRC Programmers\\.gradle\\caches\\transforms-2\\files-2.1\\ca88cab60f8315fbfb1cee33fd52855e\\api-cpp-5.19.4-linuxathenastatic\\linux\\athena\\static\\libCTRE_Phoenix.a"

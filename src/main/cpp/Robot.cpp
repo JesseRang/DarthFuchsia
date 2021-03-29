@@ -18,6 +18,7 @@
 #include "Intake.h"
 #include "Shooter.h"
 #include "LimeLight.h"
+#include <frc/Watchdog.h>
 
 WPI_TalonFX IntakeMotor{0};
 
@@ -64,7 +65,7 @@ public:
 
     m_swerve.arrived = false;
 
-    frc::Wait(0.05);
+    //frc::Wait(0.05);
   }
 
   double pauseTime = 0.5;
@@ -100,7 +101,7 @@ public:
 
   void TeleopInit() override
   {
-    intakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+    intakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse); //forward is in, reverse for accuracy challenge
     driveShooter.Initiate();
     driveIntake.Initiate();
     m_swerve.ahrs->ZeroYaw();
@@ -128,6 +129,7 @@ public:
 
   void TeleopPeriodic() override
   {
+    driverBtnA = driverController.GetRawButton(1);
     driveShooter.mLimeLight.tx = driveShooter.mLimeLight.table->GetNumber("tx", 0.0);
     driveShooter.mLimeLight.ty = driveShooter.mLimeLight.table->GetNumber("ty", 0.0);
     driveShooter.mLimeLight.ta = driveShooter.mLimeLight.table->GetNumber("ta", 0.0);
@@ -145,7 +147,7 @@ public:
     driveShooter.updateButtons();
     driveIntake.updateBreakBeams(breakBeamNewBall.Get(), breakBeamIndex.Get(), breakBeamConveyorStart.Get(), breakBeamFull.Get());
     driveIntake.updateButtons();
-    isTogglingIntake = driveIntake.driverController.GetRawButton(1);
+    isTogglingIntake = operatorController.GetRawButton(6); //changed from driver controller button 1 since that's limelight
 
     //make a button to reset encoder values
     DriveWithJoystick(false); //true = field relative, false = not field relative
@@ -154,13 +156,13 @@ public:
     frc::SmartDashboard::PutNumber("bl encoder", blAnalog.GetVoltage());
     frc::SmartDashboard::PutNumber("br encoder", brAnalog.GetVoltage());
 
-    //driveIntake.Run(); //commented out temporarily to test swerve
+    driveIntake.Run();
 
     //std::cout << "index beam" << breakBeamIndex.Get() << std::endl;
     //std::cout << "New Ball Sensor " << breakBeamConveyorStart.Get() << std::endl;
     //std::cout << "Intake Full Sensor " << breakBeamFull.Get() << std::endl;
 
-    /*if (isTogglingIntake) //commented out temporarily to test swerve
+    if (isTogglingIntake) //commented out temporarily to test swerve
     {
       if (solenoidUp && firstTogglePress)
       {
@@ -178,7 +180,7 @@ public:
     else
     {
       firstTogglePress = true;
-    }*/
+    }
     frc::SmartDashboard::PutNumber("fl motor encoder", m_swerve.m_frontLeft.m_turningEncoder.GetPosition());
     frc::SmartDashboard::PutNumber("fr motor encoder", m_swerve.m_frontRight.m_turningEncoder.GetPosition());
     frc::SmartDashboard::PutNumber("bl motor encoder", m_swerve.m_backLeft.m_turningEncoder.GetPosition());
@@ -201,7 +203,7 @@ private:
   bool driveLBumper{driverController.GetRawButton(5)};
   bool driveRBumper{driverController.GetRawButton(6)};
 
-  bool operatorBtnA{operatorController.GetRawButton(2)};
+  bool driverBtnA{driverController.GetRawButton(1)};
 
   double deadzone = 0.05;
 
@@ -228,6 +230,7 @@ private:
 
   void DriveWithJoystick(bool fieldRelative)
   {
+    driverBtnA = driverController.GetRawButton(1);
     driveLBumper = driverController.GetRawButton(5);
     driveLTrigger = driverController.GetRawAxis(2);
 
@@ -332,14 +335,33 @@ private:
 
     rotSetpoint = m_swerve.doubleGyro() /* + rotationCounter * 360*/; //maybe this should just be m_swerve.doubleGyro();
     //}
+    if (driverBtnA)
+    {
+      std::cout << "btnA" << std::endl;
+      driveShooter.mLimeLight.ledMode = 3;
+      if (driveShooter.mLimeLight.tv > 0)
+      {
+        LimelightAim();
+        units::radians_per_second_t limelightCommand{driveShooter.mLimeLight.limelightTurnCmd};
+        m_swerve.Drive(xSpeed, ySpeed, -(limelightCommand * wpi::math::pi * 2), fieldRelative, false, 0, 0);
+      }
+      else
+      {
+        m_swerve.Drive(0_mps, 0_mps, 0_rad_per_s, fieldRelative, false, 0, 0);
+      }
+    }
+    else
+    {
+      driveShooter.mLimeLight.ledMode = 1;
+      m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true //commented out to test loop speed
+    }
 
-    m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true
     gyroOld = m_swerve.doubleGyro();
 
-    frc::SmartDashboard::PutNumber("fl motor encoder", m_swerve.m_frontLeft.m_turningEncoder.GetPosition());
-    frc::SmartDashboard::PutNumber("fr motor encoder", m_swerve.m_frontRight.m_turningEncoder.GetPosition());
-    frc::SmartDashboard::PutNumber("bl motor encoder", m_swerve.m_backLeft.m_turningEncoder.GetPosition());
-    frc::SmartDashboard::PutNumber("br motor encoder", m_swerve.m_backRight.m_turningEncoder.GetPosition());
+    //frc::SmartDashboard::PutNumber("fl motor encoder", m_swerve.m_frontLeft.m_turningEncoder.GetPosition());
+    //frc::SmartDashboard::PutNumber("fr motor encoder", m_swerve.m_frontRight.m_turningEncoder.GetPosition());
+    //frc::SmartDashboard::PutNumber("bl motor encoder", m_swerve.m_backLeft.m_turningEncoder.GetPosition());
+    //frc::SmartDashboard::PutNumber("br motor encoder", m_swerve.m_backRight.m_turningEncoder.GetPosition());
   }
 
   void DriveAutonomous(double direction, double distance, double maxVelocity, bool fieldRelative)
@@ -393,14 +415,71 @@ private:
     m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, true, distance, maxVelocity); //field relative = true
   }
 
+  double clamp(double in, double minval, double maxval)
+    {
+      if (in > maxval)
+        return maxval;
+      if (in < minval)
+        return minval;
+      return in;
+    }
+
   void LimelightAim()
   {
-    operatorBtnA = operatorController.GetRawButton(2);
+    std::cout << "limelight aim" <<std::endl;
+    //Proportional Steering Constant
+    const double STEER_K = 0.03; //changed from 0.03 to give more power to turn
+    float ki = 0.00125; 
 
-    /*if (operatorBtnA)
+    const double MAX_STEER = 0.3f;
+    float min_command = 0.07f;
+
+    if (driveShooter.mLimeLight.tv < 1.0)
     {
-      
-    }*/
+      std::cout << "no target" <<std::endl;
+      driveShooter.mLimeLight.limelightHasTarget = false;
+      driveShooter.mLimeLight.limelightTurnCmd = 0;
+    }
+    else
+    {
+      std::cout << "has target" << std::endl;
+      driveShooter.mLimeLight.limelightHasTarget = true;
+
+      //Averaging tx to mitigate glitch
+      driveShooter.mLimeLight.txavg = (0.2 * driveShooter.mLimeLight.tx) + (0.8 * driveShooter.mLimeLight.txavg);
+      // cout << "txavg " << txavg << endl;
+      // cout << "tx " << tx << endl;
+      // Proportional steering
+      float steering_adjust = 0.0;
+      if (driveShooter.mLimeLight.txavg > 2.0 || driveShooter.mLimeLight.txavg < -2.0) //this is correct !do not touch the numbers!
+      {
+        driveShooter.mLimeLight.limelightIntegral = 0;
+      }
+      else if (driveShooter.mLimeLight.txavg < 0.5 && driveShooter.mLimeLight.txavg > -0.5) // we made this a tenth smaller was 0.25 respectively
+      {
+        driveShooter.mLimeLight.limelightIntegral = 0;
+      }
+      else
+      {
+        driveShooter.mLimeLight.limelightIntegral = driveShooter.mLimeLight.limelightIntegral + driveShooter.mLimeLight.txavg; //changed multiplier to only modify limelight integral so power wouldn't be too high when tx is low
+      }
+
+      if (driveShooter.mLimeLight.txavg > .3) //used to be .2
+      {
+        std::cout << "txavg > .3" << std::endl;
+        driveShooter.mLimeLight.limelightTurnCmd = driveShooter.mLimeLight.txavg * STEER_K + driveShooter.mLimeLight.limelightIntegral * ki +min_command; //put integral back in
+      }
+      else if (driveShooter.mLimeLight.txavg < -.3) //we changed the negative here //used to be .2
+      {
+        std::cout << "txavg < -.3" << std::endl;
+        driveShooter.mLimeLight.limelightTurnCmd = driveShooter.mLimeLight.txavg * STEER_K + driveShooter.mLimeLight.limelightIntegral * ki -min_command; //put integral back in
+      }
+      //cout << "Limelight CMD" << m_LimelightTurnCmd << endl;
+      driveShooter.mLimeLight.limelightTurnCmd = clamp(driveShooter.mLimeLight.limelightTurnCmd, -MAX_STEER, MAX_STEER);
+      // cout << m_LimelightTurnCmd << endl;
+      // drive forward until the target area reaches our desired area
+      std::cout << "turn command: " << driveShooter.mLimeLight.limelightTurnCmd << std::endl;
+    }
   }
 
   void pauseAuto(double pauseTime)
@@ -577,8 +656,13 @@ private:
     m_swerve.m_frontRight.m_turningMotor.Disable();
     m_swerve.m_backLeft.m_turningMotor.Disable();
     m_swerve.m_backRight.m_turningMotor.Disable();
-  
-    frc::SmartDashboard::PutNumber("Front Left Encoder Value", fl_relativeEncoder);
+
+    double frAnalogOffset = 0.42; //this offset is correct
+    double flAnalogOffset = 0; //this offset is correct
+    double brAnalogOffset = 0.02; //this offset is correct
+    double blAnalogOffset = -0.05; //this offset is correct
+
+    //frc::SmartDashboard::PutNumber("Front Left Encoder Value", fl_relativeEncoder);
     /*The following gets the gyro angle, compares it to where it is on the circle and then translates that to the
     encoder
     TODO: Wrong Math, need to implement the analog encoder in some way*/
@@ -604,7 +688,7 @@ private:
       fl_relativeEncoder = ((-9 / 2.45) * flAnalog.GetVoltage()) + 18; //changed 360 to 18
     }
 
-    m_swerve.m_frontLeft.m_turningEncoder.SetPosition(fl_relativeEncoder);
+    m_swerve.m_frontLeft.m_turningEncoder.SetPosition(fl_relativeEncoder + flAnalogOffset);
 
     if (frAnalog.GetVoltage() <= 2.45)
     {
@@ -615,7 +699,7 @@ private:
       fr_relativeEncoder = ((-9 / 2.45) * frAnalog.GetVoltage()) + 18;
     }
 
-    m_swerve.m_frontRight.m_turningEncoder.SetPosition(fr_relativeEncoder);
+    m_swerve.m_frontRight.m_turningEncoder.SetPosition(fr_relativeEncoder + frAnalogOffset); //+1 because drive was crooked
 
     if (blAnalog.GetVoltage() <= 2.45)
     {
@@ -626,7 +710,7 @@ private:
       bl_relativeEncoder = ((-9 / 2.45) * blAnalog.GetVoltage()) + 18;
     }
 
-    m_swerve.m_backLeft.m_turningEncoder.SetPosition(bl_relativeEncoder);
+    m_swerve.m_backLeft.m_turningEncoder.SetPosition(bl_relativeEncoder + blAnalogOffset);
 
     if (brAnalog.GetVoltage() <= 2.45)
     {
@@ -637,7 +721,7 @@ private:
       br_relativeEncoder = ((-9 / 2.45) * brAnalog.GetVoltage()) + 18;
     }
 
-    m_swerve.m_backRight.m_turningEncoder.SetPosition(br_relativeEncoder);
+    m_swerve.m_backRight.m_turningEncoder.SetPosition(br_relativeEncoder + brAnalogOffset);
 
     std::cout << "encoder reset" << std::endl;
     frc::Wait(0.2);
