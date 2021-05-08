@@ -18,10 +18,10 @@ private:
     ctre::phoenix::motorcontrol::can::TalonFX shooterMotorR{1}; //can id should be 1
 
     double shooterF = 0.05;
-    double shooterP = 4.75; //5
+    double shooterP = 4.75; //4.75
     double shooterI = 0;
-    double shooterD = 1; //changed from 0.5 to original value of 1
-    double wallP = 0.125;
+    double shooterD = 1; //1
+    double wallP = 0.25; //0.125
     double commandShooter = 0;
     float hoodPosition = 0;
 
@@ -39,7 +39,7 @@ private:
 
     double trenchSpeed = 5500; //6000
     double initSpeed = 5500;
-    double wallSpeed = 2700; //2700
+    double wallSpeed = 3000; //2700
     double limelightSpeed = 2880; ///5075
 
     double flyWheelDesiredSpeed = 0; //should be 0

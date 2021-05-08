@@ -29,7 +29,7 @@ void Shooter::Initiate()
 void Shooter::updateButtons()
 {
     trenchButtonPressed = operatorController.GetRawButton(4);
-    initButtonPressed = driverController.GetRawButton(6); //changed from operator controller for scoring challenge also should be raw btn 3
+    initButtonPressed = operatorController.GetRawButton(3); //changed from operator controller for scoring challenge also should be raw btn 3
     wallButtonPressed = operatorController.GetRawButton(1);
     testButtonPressed = operatorController.GetRawButton(2);
 
@@ -108,24 +108,16 @@ void Shooter::setPIDFValues(bool isWallShot)
     //shooterMotorL.Config_kI(0, shooterI, timeoutMS); //commented out to try to fix bugs
     shooterMotorL.Config_kD(0, shooterD, timeoutMS);
 
-    shooterP = frc::SmartDashboard::GetNumber("ShooterP", shooterP);
-    shooterMotorL.Config_kP(0, shooterP, timeoutMS);
+    //shooterP = frc::SmartDashboard::GetNumber("ShooterP", shooterP);
+    //shooterMotorL.Config_kP(0, shooterP, timeoutMS);
 
-    /*if (isWallShot)
+    if (isWallShot)
         //shooterMotorL.Config_kP(0, wallP, timeoutMS); //commented out to adjust pid from smart dashboard
-        if (wallP != frc::SmartDashboard::GetNumber("WallP", 0))
-        {
-            wallP = frc::SmartDashboard::GetNumber("WallP", 0);
-            shooterMotorL.Config_kP(0, wallP, timeoutMS);
-        }
+        shooterMotorL.Config_kP(0, wallP, timeoutMS);
     else
     {
-        if (shooterP != frc::SmartDashboard::GetNumber("ShooterP", shooterP))
-        {
-            shooterP = frc::SmartDashboard::GetNumber("ShooterP", shooterP);
-            shooterMotorL.Config_kP(0, shooterP, timeoutMS);
-        }
-    }*/
+        shooterMotorL.Config_kP(0, shooterP, timeoutMS);
+    }
 
     /*if (shooterI != frc::SmartDashboard::GetNumber("ShooterI", 0))
     {
@@ -158,6 +150,7 @@ void Shooter::setLimelightSpeed()
 {
     double modValue = 3.4133;
     double limelightDistanceOffset = 4;
+    std::cout << "hood: " << hoodServo.GetSpeed() << std::endl;
 
     if (isLimelightActive || autoShot == true)
     {
@@ -179,11 +172,11 @@ void Shooter::setLimelightSpeed()
 
                 setHoodPosition(-0.43 + (0.0382 * mLimeLight.ty) + (0.00146 * (mLimeLight.ty * mLimeLight.ty))); //-0.65
 
-                flyWheelDesiredSpeed = (2400 + (-53.2 * mLimeLight.ty) + (-1.22 * (mLimeLight.ty * mLimeLight.ty))) * modValue; //2650
-                if (flyWheelDesiredSpeed > 3000 * modValue)
+                flyWheelDesiredSpeed = (2411 + (-42.4 * mLimeLight.ty) + (-0.919 * (mLimeLight.ty * mLimeLight.ty))) * modValue; //2650
+                /*if (flyWheelDesiredSpeed > 3000 * modValue)
                 {
                     flyWheelDesiredSpeed = 3000 * modValue;
-                }
+                }*/
             }
             shooterMotorL.Set(TalonFXControlMode::Velocity, flyWheelDesiredSpeed);
         }
@@ -224,7 +217,7 @@ void Shooter::modifyWheelVelocity()
     double modValue = 3.4133;
     float trenchHoodPosition = -1; //changed from -0.3
     float initHoodPosition = 0;    //changed from 0.7
-    float wallHoodPosition = 1;
+    float wallHoodPosition = 0.55; //was 1
     float defaultHoodPosition = -0.6;
     //float getHoodPosition = hoodServo.GetSpeed();
 
@@ -240,8 +233,10 @@ void Shooter::modifyWheelVelocity()
     }
     else if (wallButtonPressed)
     {
-        //flyWheelDesiredSpeed = wallSpeed * modValue;
+        flyWheelDesiredSpeed = wallSpeed * modValue;
         setHoodPosition(wallHoodPosition);
+        std::cout << "hood: " << hoodServo.GetSpeed() << std::endl;
+        std::cout << "speed: " << flyWheelDesiredSpeed << std::endl;
     }
 
     if (flyWheelDesiredSpeed == 0)

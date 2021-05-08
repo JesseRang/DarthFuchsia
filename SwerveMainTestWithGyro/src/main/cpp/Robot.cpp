@@ -50,7 +50,7 @@ public:
   void RobotInit()
   {
     m_swerve.ahrs->ZeroYaw();
-    climberBrake.Set(false);
+    climberBrake.Set(true);
     frc::CameraServer::GetInstance()->StartAutomaticCapture(0);
   }
 
@@ -161,10 +161,12 @@ public:
   bool zeroYawBtn;
 
   bool climberBrakeButton;
+  bool boostButton;
 
   void TeleopPeriodic() override
   {
     driverBtnA = driverController.GetRawButton(1);
+    boostButton = driverController.GetRawButton(6);
     driveShooter.mLimeLight.tx = driveShooter.mLimeLight.table->GetNumber("tx", 0.0);
     driveShooter.mLimeLight.ty = driveShooter.mLimeLight.table->GetNumber("ty", 0.0);
     driveShooter.mLimeLight.ta = driveShooter.mLimeLight.table->GetNumber("ta", 0.0);
@@ -183,7 +185,7 @@ public:
     double limelightHasTarget = driveShooter.mLimeLight.table->GetNumber("tv", 0.0);
 
     driveShooter.printPIDFValues();
-    driveShooter.setPIDFValues(false);
+    driveShooter.setPIDFValues(operatorController.GetRawButton(1));
 
     driveShooter.updateLimelight(driveShooter.mLimeLight.ty, limelightHasTarget);
     driveShooter.updateButtons();
@@ -237,11 +239,11 @@ public:
 
     if (climberBrakeButton)
     {
-      climberBrake.Set(false);
+      climberBrake.Set(true);
     }
     else
     {
-      climberBrake.Set(true);
+      climberBrake.Set(false);
     }
   }
 
@@ -260,6 +262,7 @@ private:
   bool driveRBumper{driverController.GetRawButton(6)};
 
   bool driverBtnA{driverController.GetRawButton(1)};
+  
 
   double deadzone = 0.05;
 
@@ -354,7 +357,7 @@ private:
       m_swerve.m_backRight.m_turningEncoder.SetPosition(brturnStay);
     }*/
     //put something different in if statement
-
+    
     auto xSpeed = /*strafe*/ m_xspeedLimiter.Calculate(driveLeftX) * Drivetrain::kMaxSpeed;
 
     frc::SmartDashboard::PutNumber("xSpeed", xSpeed.to<double>());
@@ -443,7 +446,14 @@ private:
       driveShooter.mLimeLight.ledMode = 1;
       if (!rotStayBtn)
       {
-        m_swerve.Drive(xSpeed, ySpeed, rot, fieldRelative, false, 0, 0); //field relative = true //commented out to test loop speed
+        if (boostButton)
+        {
+          m_swerve.Drive(xSpeed * 0.8, ySpeed * 0.8, rot * 0.8, fieldRelative, false, 0, 0); //field relative = true //commented out to test loop speed
+        }
+        else
+        {
+          m_swerve.Drive(xSpeed * 0.6, ySpeed * 0.6, rot * 0.6, fieldRelative, false, 0, 0); //field relative = true //commented out to test loop speed
+        }
       }
     }
 
@@ -747,22 +757,23 @@ private:
     //step 3: limelight
     //step 4: fire
     std::cout << "phase: " << phase << std::endl;
+    driveShooter.isShooting = 0;
     if (phase == 1)
     {
       intakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
       driveIntake.Run();
-      DriveAutonomous(90, 87, 200, 0, true); // speed used to be 800
+      DriveAutonomous(90, 87, 200, 0, true); // speed used to be 800 //angle was 90
     }
     if (phase == 2)
     {
       driveIntake.Run();
       intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
-      DriveAutonomous(200, 162, 400, 0, true); //162 distance
+      DriveAutonomous(200, 162, 400, 0, true); //162 distance //angle was 200
     }
     if (phase == 3)
     {
       driveShooter.Shoot();
-      if (waitCounter <= 100)
+      if (waitCounter <= 150)
       {
           LimelightAim();
           units::radians_per_second_t limelightCommand{driveShooter.mLimeLight.limelightTurnCmd};

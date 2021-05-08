@@ -41,7 +41,7 @@ public:
   {
     return m_turningEncoder.GetPosition();
   }
-double PrintSetVelocity(const frc::SwerveModuleState &state)
+  double PrintSetVelocity(const frc::SwerveModuleState &state)
   {
     return state.speed.to<double>() * 500;
   }
@@ -67,6 +67,8 @@ double PrintSetVelocity(const frc::SwerveModuleState &state)
   void zeroDriveEncoder();
   void zeroTurnEncoder(const int turningMotorChannel);
   bool pauseModule(double time);
+
+  bool boostButton;
 
 private:
   static constexpr double kWheelRadius = 0.0508;

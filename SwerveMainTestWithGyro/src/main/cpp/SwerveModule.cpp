@@ -104,6 +104,7 @@ bool SwerveModule::SetDesiredState(const frc::SwerveModuleState &state, bool aut
     double command = (doubleangle / wpi::math::pi)* 9;
     double stateSpeed = state.speed.to<double>();
     double current = m_turningEncoder.GetPosition(); 
+    
 
     // Set the motor outputs.
     if (!autonomous) {

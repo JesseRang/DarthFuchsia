@@ -2,7 +2,6 @@
 #include <frc/SmartDashboard/SmartDashboard.h>
 #include <stdio.h>
 
-
 void Drivetrain::Drive(units::meters_per_second_t xSpeed, units::meters_per_second_t ySpeed, units::radians_per_second_t rot, bool fieldRelative, bool autonomous = 0, double distance = 0, double maxVelocity = 0)
 {
   auto states = m_kinematics.ToSwerveModuleStates(fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(xSpeed, ySpeed, rot, GetAngle()) : frc::ChassisSpeeds{xSpeed, ySpeed, rot});
