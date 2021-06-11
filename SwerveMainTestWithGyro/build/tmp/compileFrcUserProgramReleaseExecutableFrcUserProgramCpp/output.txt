@@ -25,14 +25,14 @@ C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917
                 ^~~~~~~~~~~
 C:\Users\FRC Programmers\.gradle\caches\transforms-2\files-2.1\246d2968206faa917dfa3b06fbd3505b\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: note: attribute for 'enum class rev::CANDigitalInput::LimitSwitch' must follow the 'enum class' keyword
 C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Robot.cpp: In member function 'void Robot::LimelightAim()':
-C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Robot.cpp:554:13: warning: unused variable 'steering_adjust' [-Wunused-variable]
+C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Robot.cpp:568:13: warning: unused variable 'steering_adjust' [-Wunused-variable]
        float steering_adjust = 0.0;
              ^~~~~~~~~~~~~~~
 C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Robot.cpp: In member function 'void Robot::resetTurnEncoder()':
-C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Robot.cpp:839:12: warning: unused variable 'resetPosition' [-Wunused-variable]
+C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Robot.cpp:861:12: warning: unused variable 'resetPosition' [-Wunused-variable]
      double resetPosition = gyroAngle / 180 * 9; //convert the angle to encoder clicks
             ^~~~~~~~~~~~~
-C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Robot.cpp:846:12: warning: unused variable 'distToHome' [-Wunused-variable]
+C:\Users\FRC Programmers\Desktop\FRC Programs\SwerveMainTestWithGyro\src\main\cpp\Robot.cpp:868:12: warning: unused variable 'distToHome' [-Wunused-variable]
      double distToHome = flAnalog.GetVoltage() - 2.45;
             ^~~~~~~~~~
 

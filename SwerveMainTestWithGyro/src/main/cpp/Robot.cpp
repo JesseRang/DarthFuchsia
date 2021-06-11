@@ -32,6 +32,7 @@ frc::DigitalInput breakBeamFull{9};          //at the top of the conveyor
 
 frc::Timer timer;
 frc::Timer arrivedTimer;
+frc::Timer autoShootTimer;
 frc::AnalogInput brAnalog{3};
 frc::AnalogInput blAnalog{2};
 frc::AnalogInput frAnalog{0};
@@ -52,14 +53,27 @@ public:
     m_swerve.ahrs->ZeroYaw();
     climberBrake.Set(true);
     frc::CameraServer::GetInstance()->StartAutomaticCapture(0);
+
+    m_swerve.m_frontLeft.m_driveMotor.SetSmartCurrentLimit(0, 40, 0);
+    m_swerve.m_frontRight.m_driveMotor.SetSmartCurrentLimit(0, 40, 0);
+    m_swerve.m_backLeft.m_driveMotor.SetSmartCurrentLimit(0, 40, 0);
+    m_swerve.m_backRight.m_driveMotor.SetSmartCurrentLimit(0, 40, 0);
+
+    m_swerve.m_frontLeft.m_turningMotor.SetSmartCurrentLimit(0, 30, 0);
+    m_swerve.m_frontRight.m_turningMotor.SetSmartCurrentLimit(0, 30, 0);
+    m_swerve.m_backLeft.m_turningMotor.SetSmartCurrentLimit(0, 30, 0);
+    m_swerve.m_backRight.m_turningMotor.SetSmartCurrentLimit(0, 30, 0);
   }
 
+  
   int waitCounter = 0;
-
   void AutonomousInit() override
-  {
+  { 
     driveShooter.Initiate();
     driveIntake.Initiate();
+
+    autoShootTimer.Reset();
+    
 
     m_swerve.m_frontLeft.zeroDriveEncoder();
     m_swerve.m_frontRight.zeroDriveEncoder();
@@ -70,7 +84,7 @@ public:
 
     driveIntake.autonomousIntake = true;
 
-    //resetTurnEncoder();
+    resetTurnEncoder();
 
     m_swerve.ahrs->ZeroYaw();
 
@@ -191,7 +205,7 @@ public:
     driveShooter.updateButtons();
     driveIntake.updateBreakBeams(breakBeamNewBall.Get(), breakBeamIndex.Get(), breakBeamConveyorStart.Get(), breakBeamFull.Get(), breakBeamConveyorSpace.Get());
     driveIntake.updateButtons();
-    isTogglingIntake = operatorController.GetRawButton(6); //changed from driver controller button 1 since that's limelight
+    isTogglingIntake = operatorController.GetRawButton(6); //changed from operator controller button 6 for easier testing
     driveClimber.updateButtons();
     climberBrakeButton = operatorController.GetRawButton(5);
 
@@ -358,13 +372,13 @@ private:
     }*/
     //put something different in if statement
     
-    auto xSpeed = /*strafe*/ m_xspeedLimiter.Calculate(driveLeftX) * Drivetrain::kMaxSpeed;
+    auto xSpeed = /*strafe*/ -m_xspeedLimiter.Calculate(driveLeftX) * Drivetrain::kMaxSpeed; //added negative sign to invert controller for new zero
 
     frc::SmartDashboard::PutNumber("xSpeed", xSpeed.to<double>());
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
-    auto ySpeed = /*-forward*/ -m_yspeedLimiter.Calculate(driveLeftY) * Drivetrain::kMaxSpeed;
+    auto ySpeed = /*-forward*/ m_yspeedLimiter.Calculate(driveLeftY) * Drivetrain::kMaxSpeed; //removed negative sign to invert controller for new zero
     frc::SmartDashboard::PutNumber("ySpeed", ySpeed.to<double>());
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left
@@ -467,7 +481,7 @@ private:
 
   void DriveAutonomous(double direction, double distance, double maxVelocity, double desiredRot, bool fieldRelative)
   {
-    driveShooter.autoShot = true;
+    driveShooter.autoShot = true; //used to be true
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     /*double gyroDegrees = m_swerve.ahrs->GetYaw() * -1;
@@ -752,6 +766,7 @@ private:
   
   void fiveBallAuto()
   {
+    frc::SmartDashboard::PutNumber("ShooterVelocity", driveShooter.shooterMotorL.GetSelectedSensorVelocity() / 3.4133);
     //step 1: back up into trench & grab balls
     //step 2: drive diagonally to init line
     //step 3: limelight
@@ -772,33 +787,41 @@ private:
     }
     if (phase == 3)
     {
-      driveShooter.Shoot();
-      if (waitCounter <= 150)
-      {
-          LimelightAim();
-          units::radians_per_second_t limelightCommand{driveShooter.mLimeLight.limelightTurnCmd};
-          m_swerve.Drive(0_mps, 0_mps, -(limelightCommand * wpi::math::pi * 2), true, false, 0, 0);
-          waitCounter++;
-          std::cout << "wait counter: " << waitCounter << std::endl;
-      }
-      else
+      driveShooter.isShooting = 0;
+      //driveShooter.Shoot();
+      LimelightAim();
+      units::radians_per_second_t limelightCommand{driveShooter.mLimeLight.limelightTurnCmd};
+      m_swerve.Drive(0_mps, 0_mps, -(limelightCommand * wpi::math::pi * 2), true, false, 0, 0);
+      if ((driveShooter.mLimeLight.tx < 0.7 && driveShooter.mLimeLight.tx > -0.7) && (abs((driveShooter.flyWheelDesiredSpeed * driveShooter.modValue) - (driveShooter.shooterMotorL.GetSelectedSensorVelocity() / 3.4133)) < 150) && driveShooter.mLimeLight.tv == 1)
       {
         phase++;
       }
     }
-    /*else if (phase == 4)
-    {
-      driveIntake.autonomousIntake = false;
-      DriveAutonomous(0, 0, 0, 0, true);
-    }*/
+
     else if (phase == 4)
     {
       LimelightAim();
       units::radians_per_second_t limelightCommand{driveShooter.mLimeLight.limelightTurnCmd};
       m_swerve.Drive(0_mps, 0_mps, -(limelightCommand * wpi::math::pi * 2), true, false, 0, 0);
       driveIntake.autonomousIntake = false;
-      driveShooter.isShooting = 1;
-      driveShooter.Shoot();
+      
+      
+      if (waitCounter < 300)
+      {
+        waitCounter++;
+        driveShooter.isShooting = 0;
+        driveShooter.setLimelightSpeed();
+      }
+      else 
+      {
+        driveShooter.isShooting = 1;
+        driveShooter.setLimelightSpeed();
+        driveShooter.activateConveyor();
+      }
+      /*if ((driveShooter.flyWheelDesiredSpeed - driveShooter.shooterMotorL.GetSelectedSensorVelocity()) < 150)
+      {
+        
+      }*/
     }
     /*else
     {

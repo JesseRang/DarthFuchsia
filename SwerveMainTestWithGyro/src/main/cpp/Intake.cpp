@@ -15,7 +15,7 @@ void Intake::Initiate()
     //conveyorMotor.ConfigContinuousCurrentLimit(5, 0);
     conveyorMotor.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
     conveyorMotor.SetInverted(true);
-
+    intakeMotor.ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 30, 30, 0.01));
     //indexMotor.ConfigContinuousCurrentLimit(5, 0);
 }
 

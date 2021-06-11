@@ -10,6 +10,7 @@
 #include <frc/DoubleSolenoid.h>
 #include <frc/Solenoid.h>
 #include <frc/Joystick.h>
+#include <ctre/Phoenix.h>
 
 //frc::DoubleSolenoid intakeSolenoid{2, 3};
 

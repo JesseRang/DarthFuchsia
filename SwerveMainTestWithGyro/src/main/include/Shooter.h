@@ -14,7 +14,7 @@ private:
     frc::Joystick driverController{0};
     frc::Joystick operatorController{1};
 
-    ctre::phoenix::motorcontrol::can::TalonFX shooterMotorL{0}; //can id should be 0
+    
     ctre::phoenix::motorcontrol::can::TalonFX shooterMotorR{1}; //can id should be 1
 
     double shooterF = 0.05;
@@ -38,11 +38,11 @@ private:
    
 
     double trenchSpeed = 5500; //6000
-    double initSpeed = 5500;
-    double wallSpeed = 3000; //2700
+    double initSpeed = 2800;
+    double wallSpeed = 2500; //2700
     double limelightSpeed = 2880; ///5075
 
-    double flyWheelDesiredSpeed = 0; //should be 0
+    
     bool powerPortChallenge = true;
 
     int timeoutMS = 30;
@@ -54,6 +54,9 @@ private:
 
 public:
     LimeLight mLimeLight;
+    ctre::phoenix::motorcontrol::can::TalonFX shooterMotorL{0}; //can id should be 0
+    double modValue;
+    double flyWheelDesiredSpeed = 0; //should be 0
     // Run in Init
     void Initiate();
     // Run in Periodic

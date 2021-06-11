@@ -19,8 +19,8 @@ void Shooter::Initiate()
     shooterMotorL.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
     shooterMotorR.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
 
-    shooterMotorL.ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 50, 0.01));
-    shooterMotorR.ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 50, 0.01));
+    shooterMotorL.ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 40, 0.01));
+    shooterMotorR.ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 40, 0.01));
 
     setPIDFValues(false);
 }
@@ -148,7 +148,7 @@ bool autoShot = false;
 
 void Shooter::setLimelightSpeed()
 {
-    double modValue = 3.4133;
+    modValue = 3.4133;
     double limelightDistanceOffset = 4;
     std::cout << "hood: " << hoodServo.GetSpeed() << std::endl;
 
@@ -167,12 +167,12 @@ void Shooter::setLimelightSpeed()
             else
             {
                 shooterP = 1.6;    //1.6
-                shooterD = 3;      //3
+                shooterD = 7;      //3
                 shooterF = 0.0475; //0.0475
 
                 setHoodPosition(-0.43 + (0.0382 * mLimeLight.ty) + (0.00146 * (mLimeLight.ty * mLimeLight.ty))); //-0.65
 
-                flyWheelDesiredSpeed = (2411 + (-42.4 * mLimeLight.ty) + (-0.919 * (mLimeLight.ty * mLimeLight.ty))) * modValue; //2650
+                flyWheelDesiredSpeed = (2750 + (-53.2 * mLimeLight.ty) + (-1.22 * (mLimeLight.ty * mLimeLight.ty))) * modValue; //2650
                 /*if (flyWheelDesiredSpeed > 3000 * modValue)
                 {
                     flyWheelDesiredSpeed = 3000 * modValue;
@@ -216,8 +216,8 @@ void Shooter::modifyWheelVelocity()
 {
     double modValue = 3.4133;
     float trenchHoodPosition = -1; //changed from -0.3
-    float initHoodPosition = 0;    //changed from 0.7
-    float wallHoodPosition = 0.55; //was 1
+    float initHoodPosition = -0.5845;    //changed from 0.7
+    float wallHoodPosition = 0.59; //was 1
     float defaultHoodPosition = -0.6;
     //float getHoodPosition = hoodServo.GetSpeed();
 
